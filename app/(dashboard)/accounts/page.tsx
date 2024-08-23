@@ -1,6 +1,7 @@
 'use client'
 import { useNewAccount } from '@/features/accounts/hooks/use-new-account';
 import { useGetAccounts } from '@/features/accounts/api/use-get-accounts';
+import { useBulkDelete } from '@/features/accounts/api/use-bulk-delete';
 
 
 import { 
@@ -17,8 +18,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const AccountsPage = () => {
     const newAccount = useNewAccount();
+    const deleteAccounts = useBulkDelete()
     const accountsQuery = useGetAccounts();
-    const accounts = accountsQuery.data || []
+    const accounts = accountsQuery.data || [];
+
+    const isDisabled = 
+    accountsQuery.isLoading ||
+    deleteAccounts.isPending;
 
     if(accountsQuery.isLoading) {
         return (
@@ -49,7 +55,15 @@ const AccountsPage = () => {
                         </Button>
                 </CardHeader>
                 <CardContent>
-                    <DataTable columns={columns} data={accounts} filterKey='email' onDelete={()=> null} disabled={false} /> 
+                    <DataTable 
+                        columns={columns} 
+                        data={accounts} 
+                        filterKey={'select'}
+                        onDelete={(row) => {
+                            const ids = row.map((r) => r.original.id)
+                            deleteAccounts.mutate({ ids }) 
+                        }} 
+                        disabled={isDisabled} /> 
                 </CardContent>
             </Card>
         </div>
