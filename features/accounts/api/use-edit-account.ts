@@ -29,7 +29,7 @@ export const useEditAccount = (id?: string) => {
             // TODO : invalidate summary and transac tions
         },
         onError: () => {
-            toast.error("Failed to Update Account")
+            toast.error("Failed to Edit Account")
         }
     });
     return mutation

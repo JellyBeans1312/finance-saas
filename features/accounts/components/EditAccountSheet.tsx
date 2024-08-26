@@ -29,7 +29,7 @@ export const EditAccountSheet = () => {
     const { id, isOpen, onClose} = useOpenAccount();
     const [ ConfirmationDialog, confirm ] = useConfirm(
         "Are you sure?",
-        "You are about to delete a transaction."
+        "You are about to delete an account."
     )
     
 
