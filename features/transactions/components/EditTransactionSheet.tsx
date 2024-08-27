@@ -35,7 +35,6 @@ export const EditTransactionSheet = () => {
         "You are about to delete a transaction."
     )
     
-
     const transactionQuery = useGetTransaction(id);
     const editMutation = useEditTransaction(id);
     const deleteMutation = useDeleteTransaction(id);
@@ -52,10 +51,10 @@ export const EditTransactionSheet = () => {
         notes: transactionQuery.data.notes,
         date: transactionQuery.data.date
     } : {
-        amount: 0,
+        amount: "0",
         payee: undefined,
         notes: "",
-        date: new Date()
+        date: Date    
     }
     
     const onSubmit = (values: FormValues) => {
@@ -85,10 +84,10 @@ export const EditTransactionSheet = () => {
                 <SheetContent className="space-y-4">
                     <SheetHeader>
                         <SheetTitle>
-                            Edit Account
+                            Edit Transaction
                         </SheetTitle>
                         <SheetDescription>
-                            Edit an existing account
+                            Edit an existing transaction
                         </SheetDescription>
                     </SheetHeader>
                     {isLoading 
