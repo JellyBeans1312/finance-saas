@@ -12,3 +12,12 @@ export function convertAmountToMiliunites(amount: number) {
 export function convertAmountFromMiliunites(amount: number) {
   return Math.round(amount / 1000)
 };
+
+export function formatCurrency(value: number) {
+  
+  return Intl.NumberFormat("en-us", {
+    style: "currency",
+    currency: "usd",
+    minimumFractionDigits: 2,
+  }).format(value)
+}
