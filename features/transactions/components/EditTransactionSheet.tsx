@@ -7,7 +7,14 @@ import { useGetTransaction } from '@/features/transactions/api/use-get-transacti
 
 import { TransactionForm } from '@/features/transactions/components/TransactionForm';
 
+import { useCreateCategory } from '@/features/categories/api/use-create-category';
+import { useGetCategories } from '@/features/categories/api/use-get-categories';
+
+import { useCreateAccount } from '@/features/accounts/api/use-create-account';
+import { useGetAccounts } from '@/features/accounts/api/use-get-accounts';
+
 import { useConfirm } from '@/hooks/use-confirm';
+
 
 import { 
     Sheet,
@@ -20,6 +27,7 @@ import {
 import { insertTransactionSchema } from '@/db/schema';
 import { z } from 'zod';
 import { Loader2 } from 'lucide-react';
+import { convertAmountFromMiliunites } from '@/lib/utils';
 
 const formSchema = insertTransactionSchema.omit({
     id: true,
@@ -32,29 +40,63 @@ export const EditTransactionSheet = () => {
     const { id, isOpen, onClose} = useOpenTransaction();
     const [ ConfirmationDialog, confirm ] = useConfirm(
         "Are you sure?",
-        "You are about to delete a transaction."
+        "You are about to delete the transaction."
     )
     
     const transactionQuery = useGetTransaction(id);
     const editMutation = useEditTransaction(id);
     const deleteMutation = useDeleteTransaction(id);
+
+    const categoryMutation = useCreateCategory();
+    const categoryQuery = useGetCategories();
+    const onCreateCategory = (name: string) => categoryMutation.mutate({
+        name
+    });
+    const categoryOptions = (categoryQuery.data ?? []).map((category) => ({
+        label: category.name,
+        value: category.id,
+    }));
+
+    const accountMutation = useCreateAccount();
+    const accountQuery = useGetAccounts();
+    const onCreateAccount = (name: string) => accountMutation.mutate({
+        name
+    });
+    const accountOptions = (accountQuery.data ?? []).map((account) => ({
+        label: account.name,
+        value: account.id
+    }));
     
     const isPending = 
     editMutation.isPending || 
-    deleteMutation.isPending
+    deleteMutation.isPending ||
+    transactionQuery.isLoading || 
+    categoryMutation.isPending || 
+    accountMutation.isPending 
     
-    const isLoading = transactionQuery.isLoading;
+    const isLoading = 
+    transactionQuery.isLoading ||
+    categoryQuery.isLoading || 
+    accountQuery.isLoading;
+
+    const amountFromMiliunits = convertAmountFromMiliunites(transactionQuery.data ? transactionQuery.data.amount : 0);
     
     const defaultValues = transactionQuery.data ? { 
-        amount: transactionQuery.data.amount,
+        amount: amountFromMiliunits.toString(),
         payee: transactionQuery.data.payee,
         notes: transactionQuery.data.notes,
-        date: transactionQuery.data.date
+        date: transactionQuery.data.date 
+        ?  new Date(transactionQuery.data.date) 
+            : new Date(),
+        accountId: transactionQuery.data.accountId,
+        categoryId: transactionQuery.data.categoryId,
     } : {
-        amount: "0",
-        payee: undefined,
+        amount: "",
+        payee: "",
         notes: "",
-        date: Date    
+        date: new Date(),
+        accountId: "",
+        categoryId: "",
     }
     
     const onSubmit = (values: FormValues) => {
@@ -87,7 +129,6 @@ export const EditTransactionSheet = () => {
                             Edit Transaction
                         </SheetTitle>
                         <SheetDescription>
-                            Edit an existing transaction
                         </SheetDescription>
                     </SheetHeader>
                     {isLoading 
@@ -99,9 +140,13 @@ export const EditTransactionSheet = () => {
                         <TransactionForm 
                             id={id}
                             onSubmit={onSubmit}
-                            disabled={isPending}
-                            defaultValues={defaultValues}
                             onDelete={onDelete}
+                            disabled={isPending}
+                            categoryOptions={categoryOptions}
+                            onCreateCategory={onCreateCategory}
+                            accountOptions={accountOptions}
+                            onCreateAccount={onCreateAccount}
+                            defaultValues={defaultValues}
                         />
                     )
                 }
