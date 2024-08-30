@@ -65,7 +65,7 @@ const app = new Hono()
         if(!data) {
             return c.json({ error: "Not Found" }, 404);
         };
-        console.log(data)
+        
         return c.json({ data });
     }
   )
