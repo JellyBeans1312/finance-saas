@@ -17,7 +17,7 @@ import { Actions } from './actions';
 
 import { format } from 'date-fns';
 import { formatCurrency } from '@/lib/utils';
-import { AccountColumn } from './AccountColumn';
+import { AccountColumn } from './account-column';
 import { CategoryColumn } from './CategoryColumn';
 
 
