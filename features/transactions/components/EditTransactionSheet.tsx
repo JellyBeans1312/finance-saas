@@ -27,7 +27,7 @@ import {
 import { insertTransactionSchema } from '@/db/schema';
 import { z } from 'zod';
 import { Loader2 } from 'lucide-react';
-import { convertAmountFromMiliunites } from '@/lib/utils';
+import { convertAmountFromMiliunits } from '@/lib/utils';
 
 const formSchema = insertTransactionSchema.omit({
     id: true,
@@ -79,7 +79,7 @@ export const EditTransactionSheet = () => {
     categoryQuery.isLoading || 
     accountQuery.isLoading;
 
-    const amountFromMiliunits = convertAmountFromMiliunites(transactionQuery.data ? transactionQuery.data.amount : 0);
+    const amountFromMiliunits = convertAmountFromMiliunits(transactionQuery.data ? transactionQuery.data.amount : 0);
     
     const defaultValues = transactionQuery.data ? { 
         amount: amountFromMiliunits.toString(),

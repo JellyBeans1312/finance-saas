@@ -3,7 +3,7 @@ import { useSearchParams } from 'next/navigation';
 
 
 import { client } from '@/lib/hono';
-import { convertAmountFromMiliunites } from '@/lib/utils';
+import { convertAmountFromMiliunits } from '@/lib/utils';
 
 export const useGetTransactions = () => {
     const params = useSearchParams();
@@ -33,7 +33,7 @@ export const useGetTransactions = () => {
 
             return data.map((transaction) => ({
                 ...transaction, 
-                amount: convertAmountFromMiliunites(transaction.amount)
+                amount: convertAmountFromMiliunits(transaction.amount)
                 }));
         }
     })
