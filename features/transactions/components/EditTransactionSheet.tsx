@@ -79,10 +79,10 @@ export const EditTransactionSheet = () => {
     categoryQuery.isLoading || 
     accountQuery.isLoading;
 
-    const amountFromMiliunits = convertAmountFromMiliunits(transactionQuery.data ? transactionQuery.data.amount : 0);
+    // const amountFromMiliunits = convertAmountFromMiliunits(transactionQuery.data ? transactionQuery.data.amount : 0);
     
     const defaultValues = transactionQuery.data ? { 
-        amount: amountFromMiliunits.toString(),
+        amount: transactionQuery.data.amount.toString(),
         payee: transactionQuery.data.payee,
         notes: transactionQuery.data.notes,
         date: transactionQuery.data.date 
