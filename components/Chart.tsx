@@ -89,8 +89,8 @@ export const Chart = ({
                 ) : (
                     <>
                         {chartType === "area" && <AreaVariant data={data}/>}
-                        {chartType === "bar" && <BarVariant data={data} />}
                         {chartType === "line" && <LineVariant data={data} />}
+                        {chartType === "bar" && <BarVariant data={data} />}
                     </>
                 )}
             </CardContent>
