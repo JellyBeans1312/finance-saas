@@ -62,7 +62,7 @@ const app = new Hono()
                 .innerJoin(accounts, eq(transactions.accountId, accounts.id))
                 .where(
                     and(
-                        accountId ? eq(transactions.accountId, accounts.id) : undefined,
+                        accountId ? eq(transactions.accountId, accountId) : undefined,
                         eq(accounts.userId, userId),
                         gte(transactions.date, startDate),
                         lte(transactions.date, endDate),
@@ -105,7 +105,7 @@ const app = new Hono()
             .innerJoin(categories, eq(transactions.categoryId, categories.id))
             .where(
                 and(
-                    accountId ? eq(transactions.accountId, accounts.id) : undefined,
+                    accountId ? eq(transactions.accountId, accountId) : undefined,
                     eq(accounts.userId, auth.userId),
                     lt(transactions.amount, 0),
                     gte(transactions.date, startDate),
@@ -141,7 +141,7 @@ const app = new Hono()
             .innerJoin(accounts, eq(transactions.accountId, accounts.id))
             .where(
                 and(
-                    accountId ? eq(transactions.accountId, accounts.id) : undefined,
+                    accountId ? eq(transactions.accountId, accountId) : undefined,
                     eq(accounts.userId, auth.userId),
                     gte(transactions.date, startDate),
                     lte(transactions.date, endDate),

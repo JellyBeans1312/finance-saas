@@ -2,13 +2,13 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useMedia } from "react-use";
-import { NavButton } from "./NavButton";
+import { NavButton } from "@/components/layout/NavButton";
 import {
     Sheet,
     SheetContent,
     SheetTrigger
 } from "@/components/ui/sheet";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 
 const routes = [

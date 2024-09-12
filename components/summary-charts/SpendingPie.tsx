@@ -23,9 +23,9 @@ import {
     Loader2
  } from 'lucide-react';
 
-import { PieVariant } from '@/components/PieVariant';
-import { RadarVariant } from '@/components/RadarVariant';
-import { RadialVariant } from '@/components/RadialVariant';
+import { PieVariant } from '@/components/summary-charts/PieVariant';
+import { RadarVariant } from '@/components/summary-charts/RadarVariant';
+import { RadialVariant } from '@/components/summary-charts/RadialVariant';
 
 type Props = { 
     data?: {

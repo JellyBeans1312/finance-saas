@@ -8,9 +8,9 @@ import {
 } from 'recharts';
 
 import { formatPercentage } from '@/lib/utils';
-import { CategoryTooltip } from '@/components/CategoryTooltip';
+import { CategoryTooltip } from '@/components/summary-charts/CategoryTooltip';
 
-const COLORS = ["#0062FF", "#12C6FF", "#FF647", "#FF9354"];
+const COLORS = ["#0062FF", "#12C6FF", "#FF647F", "#FF9354"];
 
 type Props = { 
     data: {

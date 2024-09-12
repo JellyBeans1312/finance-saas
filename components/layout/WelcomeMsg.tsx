@@ -11,7 +11,7 @@ export const WelcomeMsg = () => {
                 {/* NEED TO ADD NAME TO LOGIN FUNCTIONALITY */}
             </h2>
             <p className="text-sm lg:text-base text-[#89b6fd]">
-                This is your financial overview report
+                
             </p>
         </div>
     )

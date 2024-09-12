@@ -4,18 +4,19 @@ import {
     CardTitle,
     CardContent
 } from '@/components/ui/card';
-import { AreaVariant } from '@/components/AreaVariant';
-import { BarVariant } from '@/components/BarVariant';
-import { LineVariant } from '@/components/LineVariant';
+import { AreaVariant } from '@/components/summary-charts/AreaVariant';
+import { BarVariant } from '@/components/summary-charts/BarVariant';
+import { LineVariant } from '@/components/summary-charts/LineVariant';
 import {
     Select,
     SelectTrigger,
     SelectContent,
     SelectItem,
     SelectValue
-} from '@/components/ui/select'
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 
-import { AreaChart, FileSearch, LineChart, BarChart3 } from 'lucide-react';
+import { AreaChart, FileSearch, LineChart, BarChart3, Loader2 } from 'lucide-react';
 
 import { useState } from 'react';
 
@@ -95,5 +96,21 @@ export const Chart = ({
                 )}
             </CardContent>
         </Card>
-    )
-}
+    );
+};
+
+export const ChartLoading = () => {
+    return (
+        <Card className='border-none drop-shadow-sm'>
+            <CardHeader className='flex space-y-2 justify-between lg:flex-row lg:items-center lg:space-y-0'>
+                    <Skeleton className='h-8 w-48'/>
+                    <Skeleton className='h-4 lg:w-[120px] w-full'/>
+            </CardHeader>
+            <CardContent>
+                <div className='h-[350px] w-full flex items-center justify-center'>
+                    <Loader2 className='h-6 w-6 text-slate-300 animate-spin'/>
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
