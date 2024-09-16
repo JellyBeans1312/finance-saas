@@ -6,7 +6,7 @@ import { and, eq, inArray } from 'drizzle-orm';
 import { zValidator } from '@hono/zod-validator';
 import { createId } from '@paralleldrive/cuid2';
 import { z } from 'zod';
-import { auth } from '@clerk/nextjs/server';
+
 
 const app = new Hono()
 
