@@ -6,12 +6,15 @@ import { useState } from 'react';
 import { usePlaidLink } from 'react-plaid-link';
 
 import { Button } from '@/components/ui/button';
+
 import { useCreateLinkToken } from '@/features/plaid/api/use-create-link-token';
+import { useExchangePublicToken } from '@/features/plaid/api/use-exchange-public-token';
 
 export const PlaidConnect = () => {
     const [ token, setToken ] = useState<string | null>(null);
 
     const createLinkToken = useCreateLinkToken();
+    const exchangePublicToken = useExchangePublicToken();
 
     useMount(() => {
         createLinkToken.mutate(undefined, {
@@ -24,13 +27,14 @@ export const PlaidConnect = () => {
     const plaid = usePlaidLink({
         token: token,
         onSuccess: (publicToken) => {
-            console.log({ publicToken })
+            exchangePublicToken.mutate({ publicToken })
         },
         env: "sandbox",
     });
 
     const isDisabled = 
-    !plaid.ready
+    !plaid.ready ||
+    exchangePublicToken.isPending
 
     const onClick = () => {
         plaid.open();
