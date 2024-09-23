@@ -2,7 +2,6 @@
 
 import { useMountedState } from 'react-use';
 
-
 import { NewAccountSheet } from "@/features/accounts/components/NewAccountSheet";
 import { EditAccountSheet } from '@/features/accounts/components/EditAccountSheet';
 
@@ -12,6 +11,7 @@ import { EditCategorySheet } from '@/features/categories/components/EditCategory
 import { NewTransactionSheet } from '@/features/transactions/components/NewTransactionSheet';
 import { EditTransactionSheet } from '@/features/transactions/components/EditTransactionSheet';
 
+import { SubscriptionModal } from '@/features/subscriptions/components/SubscriptionModal';
 
 export const SheetProvider = () => {
     const isMounted = useMountedState();
@@ -26,6 +26,7 @@ export const SheetProvider = () => {
             <EditCategorySheet />
             <NewTransactionSheet />
             <EditTransactionSheet />
+            <SubscriptionModal />
         </>
     );
 };

@@ -1,8 +1,6 @@
 import { Hono } from 'hono';
 import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
 
-import { config } from 'dotenv';
-
 import { plaidClient } from '@/lib/plaid';
 import { CountryCode, PlaidEnvironments, Products } from 'plaid';
 
