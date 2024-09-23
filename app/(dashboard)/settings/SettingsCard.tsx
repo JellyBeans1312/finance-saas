@@ -18,11 +18,19 @@ import { PlaidConnect } from '@/features/plaid/components/plaid-connect';
 import { PlaidDisconnect } from '@/features/plaid/components/plaid-disconnect';
 import { useGetConnectedBank } from '@/features/plaid/api/use-get-connected-bank';
 
+import { SubscriptionCheckout } from '@/features/subscriptions/components/SubscriptionCheckout';
+import { useGetSubscription } from '@/features/subscriptions/api/use-get-subscription';
+
 export const SettingsCard = () => {
     const {
         data: connectedBank,
         isLoading: isLoadingConnectedBank
     } = useGetConnectedBank();
+
+    const {
+        data: currentSubscription,
+        isLoading: isLoadingSubscription
+    } = useGetSubscription();
 
     if (isLoadingConnectedBank) {
         return (
@@ -39,7 +47,8 @@ export const SettingsCard = () => {
                 </CardContent>
             </Card>
         )
-    }
+    };
+
     return (
         <Card className='border-none drop-shadow-sm'>
             <CardHeader>
@@ -67,6 +76,25 @@ export const SettingsCard = () => {
                          ? <PlaidDisconnect />
                          : <PlaidConnect />
                         }
+                    </div>
+                </div>
+                {}
+                <Separator/>
+                <div className='flex flex-col gap-y-2 lg:flex-row items-center py-4'>
+                    <p className='text-sm font-medium w-full lg:w-[16.5rem]'>
+                        Subscription
+                    </p>
+                    <div className='w-full flex item-center justify-between'>
+                        <div className={cn(
+                            'text-sm truncate flex items-center',
+                            !currentSubscription && 'text-foreground-muted'
+                        )}>
+                            {currentSubscription 
+                                ? `Subscription ${currentSubscription.status}`
+                                : "No Subscription active"
+                            }
+                        </div>
+                            <SubscriptionCheckout />
                     </div>
                 </div>
             </CardContent>
