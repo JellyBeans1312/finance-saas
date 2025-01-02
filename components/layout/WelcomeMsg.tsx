@@ -1,18 +1,17 @@
-"use client"
+'use client';
 
-import { useUser } from "@clerk/nextjs"
+import { usePathname } from "next/navigation";
 
 export const WelcomeMsg = () => {
-    const { user, isLoaded } = useUser();
+    const pathname = usePathname();
+    const routeFinal = pathname.split('/').pop() || '';
+    const routeHeader = routeFinal?.charAt(0).toUpperCase() + routeFinal?.slice(1);
+
     return (
         <div className="space-y-2 mb-4">
             <h2 className="text-2xl lg:text-4xl text-white font-medium ">
-                Welcome Back{ isLoaded ? ", " : " "}{user?.firstName}
-                {/* NEED TO ADD NAME TO LOGIN FUNCTIONALITY */}
+                {routeFinal === 'sales' ? 'Sales Overview' : routeHeader}
             </h2>
-            <p className="text-sm lg:text-base text-[#89b6fd]">
-                
-            </p>
         </div>
     )
 }

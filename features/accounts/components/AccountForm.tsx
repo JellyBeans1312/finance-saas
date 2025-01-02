@@ -12,7 +12,6 @@ import {
     FormField,
     FormItem,
     FormLabel,
-    FormMessage
 } from '@/components/ui/form';
 
 const formSchema = insertAccountSchema.pick({
@@ -29,7 +28,7 @@ type Props = {
     disabled?: boolean
 };
 
-export const AccountForm =({
+export const AccountForm = ({
     id,
     defaultValues,
     onSubmit, 

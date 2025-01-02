@@ -1,10 +1,18 @@
 import { useCheckoutSubscription } from "@/features/subscriptions/api/use-checkout-subscription";
 import { useGetSubscription } from "@/features/subscriptions/api/use-get-subscription";
+import { useSubscriptionModal } from "@/features/subscriptions/hooks/use-subscription-modal";
+import { AppFeatures } from '@/db/schema';
+import { useFeatureAccess } from '@/hooks/use-feature-access';
 
 import { Button } from '@/components/ui/button';
 
-export const SubscriptionCheckout = () => {
-    const checkout = useCheckoutSubscription();
+interface SubscriptionCheckoutProps {
+    feature: AppFeatures;
+}
+
+export const SubscriptionCheckout = ({ feature }: SubscriptionCheckoutProps) => {
+    const { onOpen } = useSubscriptionModal();
+    const { hasFeature } = useFeatureAccess();
     const {
         data: currentSubscription,
         isLoading: isLoadingSubscription
@@ -12,12 +20,15 @@ export const SubscriptionCheckout = () => {
 
     return (
         <Button
-            onClick={() => checkout.mutate()}
+            onClick={() => onOpen(feature)}
             disabled={isLoadingSubscription}
-            variant={"ghost"}
-            size={"sm"}
+            variant={hasFeature(feature) ? "outline" : "default"}
+            className="w-full"
         >
-            {currentSubscription ? "Manage" : "Upgrade"}
+            {hasFeature(feature) 
+                ? "Manage Subscription" 
+                : `Upgrade to ${feature.toLowerCase()} features`
+            }
         </Button>
     )
 }
