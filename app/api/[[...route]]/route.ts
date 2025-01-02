@@ -1,11 +1,12 @@
 import { Hono } from 'hono';
 import { handle } from 'hono/vercel';
-import accounts from './accounts';
-import categories from './categories';
-import transactions from './transactions';
-import summary from './summary';
-import plaid from './plaid';
-import subscriptions from './subscriptions'
+import accounts from './routes/banking/accounts';
+import categories from './routes/banking/categories';
+import transactions from './routes/banking/transactions';
+import summary from './routes/summary';
+import plaid from './routes/plaid';
+import subscriptions from './routes/subscriptions';  
+import invoices from './routes/sales/invoices';
 
 export const runtime = 'nodejs'
 
@@ -18,6 +19,7 @@ const routes = app
     .route('/summary', summary)
     .route('/plaid', plaid)
     .route('/subscriptions', subscriptions)
+    .route('/invoices', invoices)
 
 export const GET = handle(app);
 export const POST = handle(app);

@@ -15,7 +15,8 @@ export const useCreateLinkToken = () => {
             const response = await client.api.plaid['create-link-token'].$post();
 
             if(!response.ok) {
-                throw Error("Failed to create token")
+                const errorData = await response.json();
+                throw Error(errorData.error || "Failed to create token")
             }
             
             return await response.json();

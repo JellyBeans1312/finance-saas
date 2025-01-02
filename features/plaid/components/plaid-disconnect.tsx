@@ -4,7 +4,11 @@ import { Button } from '@/components/ui/button';
 import { useDeleteConnectedBank } from '@/features/plaid/api/use-delete-connected-bank';
 import { useConfirm } from '@/hooks/use-confirm';
 
-export const PlaidDisconnect = () => {
+interface PlaidDisconnectProps {
+    onSuccess: () => void;
+}
+
+export const PlaidDisconnect = ({ onSuccess }: PlaidDisconnectProps) => {
     const [ConfirmationDialog, confirm ] = useConfirm(
         'Are you sure?',
         'This will disconnect your bank account and remove all asssociated data.'
@@ -15,6 +19,7 @@ export const PlaidDisconnect = () => {
         const ok = await confirm()
         if(ok) {
             disconnectBank.mutate();
+            onSuccess?.();
         }
     }
     return (

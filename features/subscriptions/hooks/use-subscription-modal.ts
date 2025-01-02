@@ -1,13 +1,16 @@
 import { create } from "zustand";
+import { AppFeatures } from '@/db/schema';
 
-type SubscriptionModalState = { 
+interface SubscriptionModalStore {
     isOpen: boolean;
-    onOpen: () => void;
+    feature: AppFeatures | null;
+    onOpen: (feature: AppFeatures) => void;
     onClose: () => void;
-};
+}
 
-export const useSubscriptionModal = create<SubscriptionModalState>((set) => ({
-    isOpen: false, 
-    onOpen: () => set({ isOpen: true}),
-    onClose: () => set({ isOpen: false}),
+export const useSubscriptionModal = create<SubscriptionModalStore>((set) => ({
+    isOpen: false,
+    feature: null,
+    onOpen: (feature) => set({ isOpen: true, feature }),
+    onClose: () => set({ isOpen: false, feature: null }),
 }));

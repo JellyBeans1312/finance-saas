@@ -13,7 +13,7 @@ export const useDeleteAccount = (id?: string) => {
         ResponseType,
         Error
     >({
-        mutationFn: async (json) => {
+        mutationFn: async () => {
             const response = await client.api.accounts[":id"]["$delete"]({ 
                 param: { id },
              });

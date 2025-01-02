@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-
+import { InvoiceStatus } from "@/features/invoices/types"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
@@ -15,7 +15,17 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive/10 text-destructive hover:bg-destructive/20",
         outline: "text-foreground",
-        primary: "border-transparent bg-blue-500/10 text-blue-500 hover:bg-blue-500/20"
+        primary: "border-transparent bg-blue-500/10 text-blue-500 hover:bg-blue-500/20",
+        [InvoiceStatus.PAID]: 
+          "border-transparent bg-green-500/10 text-green-500 hover:bg-green-500/20",
+        [InvoiceStatus.PENDING]: 
+          "border-transparent bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20",
+        [InvoiceStatus.CANCELLED]: 
+          "border-transparent bg-red-500/10 text-red-500 hover:bg-red-500/20",
+        [InvoiceStatus.OVERDUE]: 
+          "border-transparent bg-orange-500/10 text-orange-500 hover:bg-orange-500/20",
+        [InvoiceStatus.DRAFT]: 
+          "border-transparent bg-gray-500/10 text-gray-500 hover:bg-gray-500/20",
       },
     },
     defaultVariants: {

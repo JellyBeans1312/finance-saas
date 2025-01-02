@@ -1,0 +1,1 @@
+ALTER TABLE "connected_banks" ALTER COLUMN "consent_given_at" DROP NOT NULL;
