@@ -3,7 +3,7 @@ import { SettingsCard } from './SettingsCard'
 
 const SettingsPage = () => {
     return (
-        <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
+        <div className="max-w-screen-2xl mx-auto w-full pb-10">
             <SettingsCard />
         </div>
     )

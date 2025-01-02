@@ -62,7 +62,8 @@ export const SettingsCard = () => {
     const { hasFeature } = useFeatureAccess();
     const {
         data: connectedBank,
-        isLoading: isLoadingConnectedBank
+        isLoading: isLoadingConnectedBank,
+        error: bankError
     } = useGetConnectedBank();
 
     const {
@@ -70,7 +71,7 @@ export const SettingsCard = () => {
         isLoading: isLoadingSubscription
     } = useGetSubscription();
 
-    if (isLoadingConnectedBank || isLoadingSubscription) {
+    if (isLoadingConnectedBank || isLoadingSubscription && !bankError) {
         return (
             <Card className='border-none drop-shadow-sm'>
                 <CardHeader>
@@ -110,13 +111,15 @@ export const SettingsCard = () => {
                             <div className='space-y-1'>
                                 <p className={cn(
                                     'text-sm',
-                                    !connectedBank && 'text-muted-foreground'
+                                    !(!connectedBank || bankError) && 'text-muted-foreground'
                                 )}>
-                                    {connectedBank?.requiresUpdate 
-                                        ? "Bank Account Needs Update"
-                                        : connectedBank 
-                                            ? "Bank Account Connected"
-                                            : "No Bank Account Connected"
+                                    {bankError
+                                        ? "No Bank Account Connected"
+                                        : connectedBank?.requiresUpdate 
+                                            ? "Bank Account Needs Update"
+                                            : connectedBank 
+                                                ? "Bank Account Connected"
+                                                : "No Bank Account Connected"
                                     }
                                 </p>
                                 {connectedBank?.requiresUpdate && (
