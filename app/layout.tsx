@@ -24,22 +24,11 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider afterSignOutUrl={'/'}>
-    <html lang="en">
-      <body className={inter.className}>
-        <SidebarProvider>
-          <div className="flex h-screen">
-            <NavigationSidebar />
-            <div className="flex-1 overflow-auto">
-              <QueryProvider>
-                <SheetProvider />
-                <Toaster />
-                {children}
-              </QueryProvider>
-            </div>
-          </div>
-        </SidebarProvider>
-      </body>
-    </html>
+      <html lang="en">
+        <body className={inter.className}>
+          {children}
+        </body>
+      </html>
     </ClerkProvider>
   );
 }
