@@ -43,6 +43,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "drizzle-zod": "0.5.1",
+    "framer-motion": "^11.16.0",
     "hono": "^4.5.5",
     "lucide-react": "^0.427.0",
     "next": "14.2.5",
