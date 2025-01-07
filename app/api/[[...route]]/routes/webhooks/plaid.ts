@@ -123,4 +123,4 @@ const plaidWebhook = new Hono()
           }
         }
 
-export const POST = handle(plaidWebhook);
+export default plaidWebhook;

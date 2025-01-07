@@ -6,9 +6,7 @@ import { AppFeatures } from '@/db/schema';
 import { 
     Building2, 
     CreditCard, 
-    ChevronRight,
     Landmark,
-    Receipt, 
     AlertCircle 
 } from 'lucide-react';
 
@@ -20,9 +18,7 @@ import {
     CardDescription
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 import { Loader2 } from 'lucide-react';
 
@@ -30,33 +26,10 @@ import { useGetConnectedBank } from '@/features/plaid/api/use-get-connected-bank
 import { BankConnection } from '@/features/plaid/components/bank-connection';
 import { SubscriptionCheckout } from '@/features/subscriptions/components/SubscriptionCheckout';
 import { useGetSubscription } from '@/features/subscriptions/api/use-get-subscription';
-
-const FEATURE_DETAILS = {
-    [AppFeatures.BANKING]: {
-        title: 'Banking Features',
-        description: 'Connect your bank accounts and track transactions',
-        icon: Landmark,
-        price: '$9/month',
-        features: [
-            'Connect unlimited bank accounts',
-            'Real-time transaction tracking',
-            'CSV import/export',
-            'Transaction categorization'
-        ]
-    },
-    [AppFeatures.SALES]: {
-        title: 'Sales Features',
-        description: 'Create and manage invoices',
-        icon: Receipt,
-        price: '$12/month',
-        features: [
-            'Unlimited invoices',
-            'Custom invoice templates',
-            'Payment tracking',
-            'Client management'
-        ]
-    }
-};
+import { FEATURE_DETAILS } from '@/features/subscriptions/subscription-constants';
+import { SubscriptionStatus } from '@/features/subscriptions/components/subscription-status';
+import { FeatureList } from '@/features/subscriptions/components/feature-list';
+import { Subscription } from '@/features/subscriptions/types';
 
 export const SettingsCard = () => {
     const { hasFeature } = useFeatureAccess();
@@ -141,31 +114,9 @@ export const SettingsCard = () => {
                         </h3>
                         <div className='space-y-4'>
                             <div className='bg-muted/50 p-4 rounded-lg'>
-                                <div className='flex items-center justify-between'>
-                                    <div className='space-y-1'>
-                                        <p className={cn(
-                                            'text-sm',
-                                            !currentSubscription && 'text-muted-foreground'
-                                        )}>
-                                            {currentSubscription 
-                                                ? `Subscription ${currentSubscription.status}`
-                                                : "No Active Subscription"
-                                            }
-                                        </p>
-                                        <div className='flex gap-x-2'>
-                                            {Object.values(AppFeatures).map(feature => (
-                                                hasFeature(feature) && (
-                                                    <Badge 
-                                                        key={feature}
-                                                        variant="secondary"
-                                                    >
-                                                        {feature.toLowerCase()}
-                                                    </Badge>
-                                                )
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
+                                <SubscriptionStatus 
+                                    subscription={currentSubscription as Subscription | null} 
+                                />
                             </div>
 
                             {/* Feature Cards */}
@@ -192,14 +143,10 @@ export const SettingsCard = () => {
                                                 </CardDescription>
                                             </CardHeader>
                                             <CardContent>
-                                                <ul className="space-y-2 mb-4">
-                                                    {details.features.map((feat, index) => (
-                                                        <li key={index} className="text-sm flex items-center gap-x-2">
-                                                            <ChevronRight className="size-4 text-primary" />
-                                                            {feat}
-                                                        </li>
-                                                    ))}
-                                                </ul>
+                                                <FeatureList 
+                                                    features={Array.from(details.features)}
+                                                    className="mb-4"
+                                                />
                                                 <SubscriptionCheckout 
                                                     feature={feature as AppFeatures}
                                                 />

@@ -1,5 +1,5 @@
 import { InferResponseType } from 'hono';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { client } from '@/lib/hono';
@@ -8,6 +8,7 @@ import { AppFeatures } from '@/db/schema';
 type ResponseType = InferResponseType<typeof client.api.subscriptions.checkout["$post"], 200>
 
 export const useCheckoutSubscription = () => {
+    const queryClient = useQueryClient();
     const mutation = useMutation<
         ResponseType,
         Error,
@@ -26,9 +27,10 @@ export const useCheckoutSubscription = () => {
         },
         onSuccess: ({ data }) => {
             window.location.href = data;
+            queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
         },
-        onError: () => {
-            toast.error("Failed to create subscription URL")
+        onError: (error) => {
+            toast.error(error.message || "Failed to create subscription URL")
         }
     });
     return mutation
