@@ -21,14 +21,17 @@ export const SubscriptionCheckout = ({ feature, bankConnection }: SubscriptionCh
         isLoading: isLoadingSubscription
     } = useGetSubscription();
 
+    const isAlreadySubscribed = hasFeature(feature);
+
     return (
         <Button
             onClick={() => onOpen(feature)}
             disabled={isLoadingSubscription}
-            variant={hasFeature(feature) ? "outline" : "default"}
+            variant={isAlreadySubscribed ? "outline" : "default"}
             className={cn(bankConnection ? 'w-auto' : 'w-full')}
+            title={isAlreadySubscribed ? "Manage Subscription" : "Upgrade to features"}
         >
-            {hasFeature(feature) 
+            {isAlreadySubscribed 
                 ? "Manage Subscription" 
                 : `Upgrade to ${feature.toLowerCase()} features`
             }
