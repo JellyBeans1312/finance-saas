@@ -2,14 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { QueryProvider } from "@/providers/QueryProvider";
-import { SheetProvider } from "@/providers/SheetProvider";
-import { Toaster } from "@/components/ui/sonner";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { NavigationSidebar } from "@/components/layout/navigation-sidebar";
-import { Header } from "@/components/layout/Header";
-import { WelcomeMsg } from "@/components/layout/WelcomeMsg";
-
+import { OnboardingModal } from "@/components/onboarding-modal";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -27,6 +20,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           {children}
+          <OnboardingModal />
         </body>
       </html>
     </ClerkProvider>
