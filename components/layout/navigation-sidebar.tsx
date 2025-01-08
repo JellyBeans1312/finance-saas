@@ -72,31 +72,31 @@ const featureGroup = [
         label: 'Sales',
         icon: '',
         subItems: [
-            {
-                href: '/sales',
-                label: 'Overview',
-                icon: PanelsTopLeft,
-            },
+            // {
+            //     href: '/sales',
+            //     label: 'Overview',
+            //     icon: PanelsTopLeft,
+            // },
             {
                 href: '/sales/invoices',
                 label: 'Invoices',
                 icon: Files
             },
-            {
-                href: '/sales/estimates',
-                label: 'Estimates',
-                icon: FileQuestion
-            },
-            {
-                href: '/sales/customers',
-                label: 'Customers',
-                icon: Users
-            },
-            {
-                href: '/sales/customer-payments',
-                label: 'Customer Payments',
-                icon: BadgeDollarSign
-            },
+            // {
+            //     href: '/sales/estimates',
+            //     label: 'Estimates',
+            //     icon: FileQuestion
+            // },
+            // {
+            //     href: '/sales/customers',
+            //     label: 'Customers',
+            //     icon: Users
+            // },
+            // {
+            //     href: '/sales/customer-payments',
+            //     label: 'Customer Payments',
+            //     icon: BadgeDollarSign
+            // },
         ]
     },
     // {
