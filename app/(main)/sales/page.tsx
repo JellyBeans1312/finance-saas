@@ -1,6 +1,11 @@
+import { Suspense } from 'react';
+import { motion } from 'framer-motion';
+import SalesPageSkeleton from './loading';
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { SalesOverview } from "@/components/sales-overview"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+
+import { SalesOverview } from "@/components/sales-overview"
 
 const topCustomers = [
   { name: "Acme Corp", totalSales: "$12,345", invoices: 23 },
@@ -12,9 +17,15 @@ const topCustomers = [
 
 const SalesPage = () => {
   return (
-    <div className="space-y-6 w-full -mt-24 px-10">
-      <SalesOverview />
-      <Card>
+    <Suspense fallback={<SalesPageSkeleton />}>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="space-y-6 w-full -mt-24 px-10"
+      >
+        <SalesOverview />
+        <Card>
         <CardHeader>
           <CardTitle className="text-base font-normal">Top Customers</CardTitle>
         </CardHeader>
@@ -37,9 +48,10 @@ const SalesPage = () => {
               ))}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
-    </div>
+          </CardContent>
+        </Card>
+        </motion.div>
+    </Suspense>
   )
 }
 
