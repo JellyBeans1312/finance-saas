@@ -84,7 +84,7 @@ const app = new Hono()
                             custom: {
                                 user_id: auth.userId,
                                 feature: feature,
-                                existing_subscription_id: existingSubscription?.subscriptionId || null,
+                                existing_subscription_id: existingSubscription?.subscriptionId || undefined,
                             },
                         },
                         productOptions: {
@@ -93,11 +93,15 @@ const app = new Hono()
                     },
                 );
 
+                console.log({
+                    ...checkout.data,
+                })
                 // Add error handling and logging
                 if (!checkout?.data?.data.attributes?.url) {
                     console.error('Invalid checkout response:', checkout);
                     return c.json({ error: 'Failed to create checkout' }, 500);
                 }
+
 
                 return c.json({ data: checkout.data.data.attributes.url });
             } catch (error) {
