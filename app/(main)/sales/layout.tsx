@@ -41,7 +41,7 @@ const SalesLayout = ({children} : Props) => {
 
     if (shouldBlockFeature(AppFeatures.SALES)) {
         return (
-            <div className="h-full w-full flex flex-col items-center justify-center gap-y-4">
+            <div className="h-screen w-full flex flex-col items-center justify-center gap-y-4">
                 <h2 className="text-2xl font-semibold">
                     Sales Features Required
                 </h2>

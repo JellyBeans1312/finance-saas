@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
-import Image from 'next/image';
+import { useUser } from '@clerk/nextjs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Landmark, Receipt, Sparkles, Copy, LineChart, FileText, WalletCards, MessageSquare } from 'lucide-react';
 
@@ -96,14 +96,16 @@ const ONBOARDING_STEPS = [
                         </div>
                     </div>
                     <div className="p-4 rounded-lg border bg-card">
-                        <div className="p-2 rounded-full bg-primary/10">
-                            <WalletCards className="size-4 text-primary" />
-                        </div>
-                        <div>
-                            <h4 className="text-sm font-medium">Payment Tracking</h4>
-                            <p className="text-sm text-muted-foreground">
-                                Automatically track and reconcile payments
-                            </p>
+                        <div className="flex items-start gap-4">
+                            <div className="p-2 rounded-full bg-primary/10">
+                                <WalletCards className="size-4 text-primary" />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-medium">Payment Tracking</h4>
+                                <p className="text-sm text-muted-foreground">
+                                    Automatically track and reconcile payments
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -131,14 +133,16 @@ const ONBOARDING_STEPS = [
                         </div>
                     </div>
                     <div className="p-4 rounded-lg border bg-card">
-                        <div className="p-2 rounded-full bg-primary/10">
-                            <Sparkles className="size-4 text-primary" />
-                        </div>
-                        <div>
-                            <h4 className="text-sm font-medium">Be on the lookout for new features</h4>
-                            <p className="text-sm text-muted-foreground">
-                                We are constantly working on improving the app and adding new features
-                            </p>
+                        <div className="flex items-start gap-4">
+                            <div className="p-2 rounded-full bg-primary/10">
+                                <Sparkles className="size-4 text-primary" />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-medium">Be on the lookout for new features</h4>
+                                <p className="text-sm text-muted-foreground">
+                                    We are constantly working on improving the app and adding new features
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -172,6 +176,7 @@ const ONBOARDING_STEPS = [
 ];
 
 export const OnboardingModal = () => {
+    const { user, isLoaded } = useUser();
     const [step, setStep] = useState(0);
     const { hasSeenOnboarding, setHasSeenOnboarding } = useOnboardingStore();
     const currentStep = ONBOARDING_STEPS[step];
@@ -189,12 +194,16 @@ export const OnboardingModal = () => {
         setStep(step - 1);
     };
 
+    if(!isLoaded || !user) {
+        return null;
+    }
+
     if (hasSeenOnboarding) {
         return null;
     }
 
     return (
-        <Dialog open={!hasSeenOnboarding} onOpenChange={setHasSeenOnboarding}>
+        <Dialog open={true} onOpenChange={setHasSeenOnboarding}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <div className="mx-auto rounded-full bg-primary/10 p-3 w-fit">
@@ -236,5 +245,5 @@ export const OnboardingModal = () => {
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-    );
+    )
 };

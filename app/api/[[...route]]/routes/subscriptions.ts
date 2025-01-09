@@ -84,7 +84,7 @@ const app = new Hono()
                             custom: {
                                 user_id: auth.userId,
                                 feature: feature,
-                                existing_subscription_id: existingSubscription?.subscriptionId || null,
+                                existing_subscription_id: existingSubscription?.subscriptionId || undefined,
                             },
                         },
                         productOptions: {
