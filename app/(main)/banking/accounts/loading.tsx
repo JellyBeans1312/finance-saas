@@ -4,7 +4,6 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 const TableLoadingSkeleton = () => (
   <div className="rounded-md border">
@@ -62,22 +61,20 @@ export default function AccountsPageSkeleton() {
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   return (
-      <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
-          <Card className="border-none drop-shadow-sm">
-              <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-                  <CardTitle className="text-xl line-clamp-1">
-                      <Skeleton className="h-6 w-48" />
-                  </CardTitle>
-                  <div className="flex flex-col lg:flex-row gap-y-2 items-center gap-x-2">
-                      <Button size={isMobile ? 'icon' : 'sm'} disabled className="w-3/4 lg:w-auto">
-                          Add New
-                      </Button>
-                  </div>
-              </CardHeader>
-              <CardContent>
-                  {isMobile ? <MobileLoadingSkeleton /> : <TableLoadingSkeleton />}
-              </CardContent>
-          </Card>
-      </div>
+    <div className="px-4 md:px-10 -mt-24">
+      <Card className="border-none drop-shadow-sm">
+        <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
+          <CardTitle className="text-xl line-clamp-1">
+            <Skeleton className="h-6 w-48" />
+          </CardTitle>
+          <div className="flex flex-col lg:flex-row gap-y-2 items-center gap-x-2">
+            <Skeleton className="h-9 w-24" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isMobile ? <MobileLoadingSkeleton /> : <TableLoadingSkeleton />}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

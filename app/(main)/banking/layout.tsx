@@ -1,9 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Suspense } from "react";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
 import { AppFeatures } from "@/db/schema";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -13,9 +11,12 @@ import { Filters } from "@/components/layout/Filters";
 import { Header } from "@/components/layout/Header";
 import { WelcomeMsg } from "@/components/layout/WelcomeMsg";
 
+import { BankingLoadingSkeleton } from "@/components/banking/banking-loading";
+
 import { usePaywall } from "@/features/subscriptions/hooks/use-paywall";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
+
 
 const MOBILE_TABS = [
     { label: "Accounts", path: "/banking/accounts" },
@@ -39,14 +40,13 @@ const BankingLayout = ({children} : Props) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="h-full w-full flex items-center justify-center"
             >
-                <Loader2 className="size-6 animate-spin" />
+                <BankingLoadingSkeleton />
             </motion.div>
         );
     }
 
-    if (shouldBlockFeature(AppFeatures.BANKING)) {
+    if (shouldBlockFeature(AppFeatures.BANKING) && !isLoading) {
         return (
             <motion.div
                 initial={{ opacity: 0 }}
@@ -70,42 +70,40 @@ const BankingLayout = ({children} : Props) => {
     }
 
     return (
-        <Suspense>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                >
-                {/* Mobile Navigation */}
-                {isMobile && (
-                    <div className="sticky top-0 z-50 bg-background border-b">
-                        <nav className="flex overflow-x-auto no-scrollbar">
-                            {MOBILE_TABS.map((tab) => (
-                                <Button
-                                    key={tab.path}
-                                    onClick={() => router.push(tab.path)}
-                                    variant="ghost"
-                                    className={cn(
-                                        "flex-1 px-4 py-3 text-sm rounded-none font-medium whitespace-nowrap",
-                                        "border-b-2 transition-colors",
-                                        pathname === tab.path
-                                            ? "border-primary text-primary"
-                                            : "border-transparent text-muted-foreground"
-                                    )}
-                                >
-                                    {tab.label}
-                                </Button>
-                            ))}
-                        </nav>
-                    </div>
-                )}
-                <Header>
-                    <WelcomeMsg />
-                    <Filters/>
-                </Header>
-                {children}
-            </motion.div>
-        </Suspense>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            >
+            {/* Mobile Navigation */}
+            {isMobile && (
+                <div className="sticky top-0 z-50 bg-background border-b">
+                    <nav className="flex overflow-x-auto no-scrollbar">
+                        {MOBILE_TABS.map((tab) => (
+                            <Button
+                                key={tab.path}
+                                onClick={() => router.push(tab.path)}
+                                variant="ghost"
+                                className={cn(
+                                    "flex-1 px-4 py-3 text-sm rounded-none font-medium whitespace-nowrap",
+                                    "border-b-2 transition-colors",
+                                    pathname === tab.path
+                                        ? "border-primary text-primary"
+                                        : "border-transparent text-muted-foreground"
+                                )}
+                            >
+                                {tab.label}
+                            </Button>
+                        ))}
+                    </nav>
+                </div>
+            )}
+            <Header>
+                <WelcomeMsg />
+                <Filters/>
+            </Header>
+            {children}
+        </motion.div>
     )
 }
 

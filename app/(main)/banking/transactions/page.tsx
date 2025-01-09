@@ -24,7 +24,6 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { columns } from './columns';
 import { DataTable } from '@/components/DataTable';
-import { Skeleton } from '@/components/ui/skeleton';
 
 import { UploadButton } from './UploadButton';
 import { ImportCard } from './ImportCard';
@@ -89,6 +88,7 @@ const TransactionsPage = () => {
     const isDisabled = 
     transactionsQuery.isLoading ||
     deleteTransactions.isPending;
+    
     if(variant === VARIANTS.IMPORT) {
         return (
             <>  

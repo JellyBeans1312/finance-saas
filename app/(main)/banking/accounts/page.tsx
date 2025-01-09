@@ -12,33 +12,12 @@ import {
     CardTitle
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { columns } from './columns';
 import { DataTable } from '@/components/DataTable';
-import { Skeleton } from '@/components/ui/skeleton';
 import { AccountCard } from '@/components/account-card';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import AccountsPageSkeleton from './loading';
-
-const LoadingSkeleton = () => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    className='space-y-4'
-  >
-    {[1,2,3].map((i) => (
-      <Card key={i}>
-        <CardContent className="p-4">
-          <div className="flex justify-between items-center">
-            <Skeleton className="h-4 w-[140px]" />
-            <Skeleton className="h-4 w-[20px]" />
-          </div>
-        </CardContent>
-      </Card>
-    ))}
-  </motion.div>
-);
 
 const AccountsPage = () => {
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -77,39 +56,29 @@ const AccountsPage = () => {
             </CardHeader>
             <CardContent>
               <AnimatePresence mode="wait">
-                {accountsQuery.isLoading ? (
-                  <LoadingSkeleton />
-                ) : (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    {isMobile ? (
-                      <div className="space-y-4">
-                        {accounts.map((account: any) => (
-                          <AccountCard 
-                            key={account.id} 
-                            account={account}
-                            onEdit={() => newAccount.onOpen()}
-                            onDelete={(id) => deleteAccounts.mutate({ ids: [id] })}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <DataTable 
-                        columns={columns} 
-                        data={accounts} 
-                        filterKey={'name'}
-                        onDelete={(row) => {
-                          const ids = row.map((r) => r.original.id)
-                          deleteAccounts.mutate({ ids }) 
-                        }} 
-                        disabled={isDisabled}
-                      /> 
-                    )}
-                  </motion.div>
-                )}
+                  {isMobile ? (
+                    <div className="space-y-4">
+                      {accounts.map((account: any) => (
+                        <AccountCard 
+                          key={account.id} 
+                          account={account}
+                          onEdit={() => newAccount.onOpen()}
+                          onDelete={(id) => deleteAccounts.mutate({ ids: [id] })}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <DataTable 
+                      columns={columns} 
+                      data={accounts} 
+                      filterKey={'name'}
+                      onDelete={(row) => {
+                        const ids = row.map((r) => r.original.id)
+                        deleteAccounts.mutate({ ids }) 
+                      }} 
+                      disabled={isDisabled}
+                    /> 
+                  )}
               </AnimatePresence>
             </CardContent>
           </Card>
