@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Landmark, Receipt, Sparkles } from 'lucide-react';
-import { useOnboardingStore } from '../hooks/use-onboarding-store';
+import { ChevronRight, ChevronLeft, Landmark, Receipt, Sparkles, Copy, LineChart, FileText, WalletCards, MessageSquare } from 'lucide-react';
 
 import {
     Dialog,
@@ -17,6 +17,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
+import { useOnboardingStore } from '@/hooks/use-onboarding-store';
+
 const ONBOARDING_STEPS = [
     {
         title: 'Welcome to CoreLedger',
@@ -24,16 +26,15 @@ const ONBOARDING_STEPS = [
         icon: Sparkles,
         content: (
             <div className="space-y-4">
-                <Image
-                    src="/onboarding/welcome.png"
-                    alt="Welcome"
-                    width={400}
-                    height={300}
-                    className="rounded-lg"
-                />
-                <p className="text-muted-foreground text-sm">
-                    Get started with managing your finances more effectively
-                </p>
+                <div className="p-6 rounded-lg bg-primary/10 text-center">
+                    <Sparkles className="size-12 mx-auto mb-4 text-primary" />
+                    <p className="text-lg font-medium">
+                        Start Managing Your Finances Smarter
+                    </p>
+                    <p className="text-muted-foreground text-sm mt-2">
+                        Track, analyze, and optimize your financial activities in one place
+                    </p>
+                </div>
             </div>
         )
     },
@@ -43,23 +44,34 @@ const ONBOARDING_STEPS = [
         icon: Landmark,
         content: (
             <div className="space-y-4">
-                <Image
-                    src="/onboarding/banking.png"
-                    alt="Banking Features"
-                    width={400}
-                    height={300}
-                    className="rounded-lg"
-                />
-                <ul className="space-y-2">
-                    <li className="text-sm text-muted-foreground flex items-center gap-x-2">
-                        <ChevronRight className="size-4" />
-                        Connect multiple bank accounts
-                    </li>
-                    <li className="text-sm text-muted-foreground flex items-center gap-x-2">
-                        <ChevronRight className="size-4" />
-                        Track transactions in real-time
-                    </li>
-                </ul>
+                <div className="grid gap-4">
+                    <div className="p-4 rounded-lg border bg-card">
+                        <div className="flex items-start gap-4">
+                            <div className="p-2 rounded-full bg-primary/10">
+                                <Landmark className="size-4 text-primary" />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-medium">Account Management</h4>
+                                <p className="text-sm text-muted-foreground">
+                                    Connect and manage multiple bank accounts in one dashboard
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-4 rounded-lg border bg-card">
+                        <div className="flex items-start gap-4">
+                            <div className="p-2 rounded-full bg-primary/10">
+                                <LineChart className="size-4 text-primary" />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-medium">Real-time Tracking</h4>
+                                <p className="text-sm text-muted-foreground">
+                                    Monitor transactions and balances as they happen
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     },
@@ -69,23 +81,67 @@ const ONBOARDING_STEPS = [
         icon: Receipt,
         content: (
             <div className="space-y-4">
-                <Image
-                    src="/onboarding/sales.png"
-                    alt="Sales Features"
-                    width={400}
-                    height={300}
-                    className="rounded-lg"
-                />
-                <ul className="space-y-2">
-                    <li className="text-sm text-muted-foreground flex items-center gap-x-2">
-                        <ChevronRight className="size-4" />
-                        Create professional invoices
-                    </li>
-                    <li className="text-sm text-muted-foreground flex items-center gap-x-2">
-                        <ChevronRight className="size-4" />
-                        Track payments automatically
-                    </li>
-                </ul>
+                <div className="grid gap-4">
+                    <div className="p-4 rounded-lg border bg-card">
+                        <div className="flex items-start gap-4">
+                            <div className="p-2 rounded-full bg-primary/10">
+                                <FileText className="size-4 text-primary" />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-medium">Professional Invoicing</h4>
+                                <p className="text-sm text-muted-foreground">
+                                    Create and customize professional invoices in minutes
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-4 rounded-lg border bg-card">
+                        <div className="p-2 rounded-full bg-primary/10">
+                            <WalletCards className="size-4 text-primary" />
+                        </div>
+                        <div>
+                            <h4 className="text-sm font-medium">Payment Tracking</h4>
+                            <p className="text-sm text-muted-foreground">
+                                Automatically track and reconcile payments
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    },
+    {
+        title: 'Disclaimer',
+        description: 'The app is currrently in demo mode. Please keep that in mind when using it.',
+        icon: Receipt,
+        content: (
+            <div className="space-y-4">
+                <div className="grid gap-4">
+                    <div className="p-4 rounded-lg border bg-card">
+                        <div className="flex items-start gap-4">
+                            <div className="p-2 rounded-full bg-primary/10">
+                                <MessageSquare className="size-4 text-primary" />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-medium">Send us Feedback</h4>
+                                <p className="text-sm text-muted-foreground">
+                                    Contact us at <a href="mailto:support@coreledger.com" className="text-primary underline">support@coreledger.com</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-4 rounded-lg border bg-card">
+                        <div className="p-2 rounded-full bg-primary/10">
+                            <Sparkles className="size-4 text-primary" />
+                        </div>
+                        <div>
+                            <h4 className="text-sm font-medium">Be on the lookout for new features</h4>
+                            <p className="text-sm text-muted-foreground">
+                                We are constantly working on improving the app and adding new features
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     },
@@ -95,13 +151,21 @@ const ONBOARDING_STEPS = [
         icon: Sparkles,
         content: (
             <div className="space-y-4 text-center">
-                <Badge className="mx-auto text-lg px-4 py-2">
-                    DEMOCORELEDGER654321
-                </Badge>
-                <p className="text-muted-foreground text-sm">
-                    Thank you for choosing to demo CoreLedger! 
-                    Use this code at checkout to get your first 3 months free!
-                </p>
+                <div className="p-6 rounded-lg bg-primary/10">
+                    <Badge 
+                        className="mx-auto text-lg px-4 py-2 cursor-pointer hover:bg-primary/20" 
+                        onClick={() => {
+                            navigator.clipboard.writeText('DEMOCORELEDGER654321')
+                            .then(() => toast.success('Code copied to clipboard'));
+                        }}
+                    >
+                        <Copy className="size-4 mr-2" />
+                        DEMOCORELEDGER654321
+                    </Badge>
+                    <p className="text-muted-foreground text-sm mt-4">
+                        Click to copy your special discount code for 3 months free!
+                    </p>
+                </div>
             </div>
         )
     }

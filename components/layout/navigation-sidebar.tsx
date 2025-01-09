@@ -72,11 +72,11 @@ const featureGroup = [
         label: 'Sales',
         icon: '',
         subItems: [
-            // {
-            //     href: '/sales',
-            //     label: 'Overview',
-            //     icon: PanelsTopLeft,
-            // },
+            {
+                href: '/sales',
+                label: 'Overview',
+                icon: PanelsTopLeft,
+            },
             {
                 href: '/sales/invoices',
                 label: 'Invoices',
