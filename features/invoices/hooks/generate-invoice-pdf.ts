@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer';
 import chromium from 'chrome-aws-lambda';
 import { Invoice } from "@/features/invoices/types";
-import { InvoiceEmail } from "@/components/invoice-email";
+import { InvoiceEmail } from "@/components/sales/invoice-email";
 
 const isProd = process.env.NODE_ENV === 'production';
 
