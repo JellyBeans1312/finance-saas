@@ -34,18 +34,6 @@ const BankingLayout = ({children} : Props) => {
     const router = useRouter();
     const pathname = usePathname();
 
-    if (isLoading) {
-        return (
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-            >
-                <BankingLoadingSkeleton />
-            </motion.div>
-        );
-    }
-
     if (shouldBlockFeature(AppFeatures.BANKING) && !isLoading) {
         return (
             <motion.div
