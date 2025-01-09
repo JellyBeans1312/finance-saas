@@ -8,7 +8,7 @@ import { getAuth } from '@hono/clerk-auth';
 import { zValidator } from '@hono/zod-validator';
 import { deleteLogoFromS3, uploadLogoToS3 } from '@/lib/s3';
 
-import { InvoiceEmail } from '@/components/invoice-email';
+import { InvoiceEmail } from '@/components/sales/invoice-email';
 
 import { db } from '@/db/drizzle';
 import {

@@ -1,5 +1,5 @@
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { InvoiceDataDisplay } from '@/components/invoice-data-display';
+import { InvoiceDataDisplay } from '@/components/sales/invoice-data-display';
 import { Invoice } from '@/features/invoices/types';
 interface InvoiceDetailsProps {
     invoice: Invoice;

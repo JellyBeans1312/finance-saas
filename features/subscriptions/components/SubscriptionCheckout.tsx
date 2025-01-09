@@ -3,7 +3,6 @@ import { AppFeatures } from '@/db/schema';
 
 import { useFeatureAccess } from '@/hooks/use-feature-access';
 
-import { useCheckoutSubscription } from "@/features/subscriptions/api/use-checkout-subscription";
 import { useGetSubscription } from "@/features/subscriptions/api/use-get-subscription";
 import { useSubscriptionModal } from "@/features/subscriptions/hooks/use-subscription-modal";
 

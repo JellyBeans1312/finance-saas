@@ -30,7 +30,7 @@ import { usePushEditInvoice } from '@/features/invoices/hooks/use-edit-invoice';
 import { useEditInvoice } from '@/features/invoices/api/use-edit-invoice';
 import { Invoice, InvoiceStatus } from '@/features/invoices/types';
 import { useGetInvoice } from '@/features/invoices/api/use-get-invoice';
-import { handlePrintInvoice } from '@/components/print-invoice';
+import { handlePrintInvoice } from '@/components/sales/print-invoice';
 import { useSendInvoice } from '@/features/invoices/api/use-send-invoice';
 import { downloadInvoicePdf } from '@/features/invoices/hooks/download-invoice-pdf';
 

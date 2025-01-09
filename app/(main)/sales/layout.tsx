@@ -1,7 +1,6 @@
 'use client';
 
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
 import { AppFeatures } from "@/db/schema";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -26,18 +25,10 @@ type Props = {
 }
 
 const SalesLayout = ({children} : Props) => {
-    const { shouldBlockFeature, triggerPaywall, isLoading } = usePaywall();
+    const { shouldBlockFeature, triggerPaywall } = usePaywall();
     const isMobile = useMediaQuery('(max-width: 768px)');
     const router = useRouter();
     const pathname = usePathname();
-
-    if (isLoading) {
-        return (
-            <div className="h-full w-full flex items-center justify-center">
-                <Loader2 className="size-6 animate-spin" />
-            </div>
-        );
-    }
 
     if (shouldBlockFeature(AppFeatures.SALES)) {
         return (

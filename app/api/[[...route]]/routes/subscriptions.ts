@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-import crypto from 'crypto';
 import { eq } from "drizzle-orm";
 
 import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
@@ -88,12 +87,11 @@ const app = new Hono()
                             },
                         },
                         productOptions: {
-                            redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL!}/${feature.toLowerCase()}?checkout=success`
+                            redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL!}/${feature.toLowerCase()}`
                         },
                     },
                 );
 
-                // Add error handling and logging
                 if (!checkout?.data?.data.attributes?.url) {
                     console.error('Invalid checkout response:', checkout);
                     return c.json({ error: 'Failed to create checkout' }, 500);
