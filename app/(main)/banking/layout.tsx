@@ -52,7 +52,7 @@ const BankingLayout = ({children} : Props) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="h-full w-full flex flex-col items-center justify-center gap-y-4"
+                className="h-screen w-full flex flex-col items-center justify-center gap-y-4"
             >
                 <h2 className="text-2xl font-semibold">
                     Banking Features Required
