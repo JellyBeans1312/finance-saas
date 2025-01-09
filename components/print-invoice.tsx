@@ -24,7 +24,11 @@ const styleContent = styleSheets
   .join('\n');
 
 
-const invoiceContent = renderToString(createElement(InvoiceDetails, { invoice }));
+const invoiceContent = renderToString(
+    createElement(
+        InvoiceDetails, { 
+            invoice,
+        }));
 
 if(!invoiceContent) {
 console.error('Invoice content not found');
