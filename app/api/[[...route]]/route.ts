@@ -18,7 +18,7 @@ export const runtime = 'nodejs'
 
 const app = new Hono().basePath('/api')
 
-app.use('/*', cors({
+app.use('/api/*', cors({
     origin: [
         'https://coreledger.app', 
         'http://localhost:3000', 
