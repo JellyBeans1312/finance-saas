@@ -17,13 +17,11 @@ import {
     CardTitle,
     CardDescription
 } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-
-import { Loader2 } from 'lucide-react';
 
 import { useGetConnectedBank } from '@/features/plaid/api/use-get-connected-bank';
 import { BankConnection } from '@/features/plaid/components/bank-connection';
+
 import { SubscriptionCheckout } from '@/features/subscriptions/components/SubscriptionCheckout';
 import { useGetSubscription } from '@/features/subscriptions/api/use-get-subscription';
 import { FEATURE_DETAILS } from '@/features/subscriptions/subscription-constants';
@@ -35,31 +33,12 @@ export const SettingsCard = () => {
     const { hasFeature } = useFeatureAccess();
     const {
         data: connectedBank,
-        isLoading: isLoadingConnectedBank,
         error: bankError
     } = useGetConnectedBank();
 
     const {
         data: currentSubscription,
-        isLoading: isLoadingSubscription
     } = useGetSubscription();
-
-    if (isLoadingConnectedBank || isLoadingSubscription && !bankError) {
-        return (
-            <Card className='border-none drop-shadow-sm'>
-                <CardHeader>
-                    <CardTitle className='text-xl line-clamp-1'>
-                        <Skeleton className='h-6 w-24' />
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className='h-[350px] w-full flex items-center justify-center'>
-                        <Loader2 className='size-6 text-slate-300 animate-spin' />
-                    </div>
-                </CardContent>
-            </Card>
-        )
-    };
 
     return (
         <div className="space-y-6">
@@ -80,10 +59,10 @@ export const SettingsCard = () => {
                             <Landmark className="size-4" />
                             Bank Connection
                         </h3>
-                        <div className='flex items-center justify-between bg-muted/50 p-4 rounded-lg'>
+                        <div className='flex flex-col md:flex-row items-center md:justify-between bg-muted/50 p-4 rounded-lg'>
                             <div className='space-y-1'>
                                 <p className={cn(
-                                    'text-sm',
+                                    'text-sm mb-2 md:mb-0',
                                     !(!connectedBank || bankError) && 'text-muted-foreground'
                                 )}>
                                     {bankError
@@ -113,7 +92,7 @@ export const SettingsCard = () => {
                             Subscription Status
                         </h3>
                         <div className='space-y-4'>
-                            <div className='bg-muted/50 p-4 rounded-lg'>
+                            <div className='bg-muted/50 p-4 flex flex-col items-center justify-center md:items-start md:justify-start rounded-lg'>
                                 <SubscriptionStatus 
                                     subscription={currentSubscription as Subscription | null} 
                                 />
