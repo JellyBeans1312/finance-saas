@@ -4,7 +4,7 @@ import { z } from "zod";
 import { useParams } from "next/navigation";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { invoiceValidationSchema } from "@/db/schema";
-import { handlePrintInvoice } from "@/components/print-invoice";
+import { handlePrintInvoice } from "@/components/sales/print-invoice";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Download, Edit, Printer, ChevronDown, Send, MoreVertical } from "lucide-react";
 
