@@ -7,7 +7,6 @@ import {
     Landmark, 
     Receipt, 
     Settings,
-    PieChart
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useFeatureAccess } from '@/hooks/use-feature-access';
@@ -46,10 +45,6 @@ export const MobileNav = () => {
         <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background md:hidden">
             <div className="flex items-center justify-around">
                 {routes.map((route) => {
-                    if (route.feature && !hasFeature(route.feature)) {
-                        return null;
-                    }
-
                     const isActive = pathname === route.href;
 
                     return (
