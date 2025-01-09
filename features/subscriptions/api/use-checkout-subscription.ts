@@ -27,10 +27,11 @@ export const useCheckoutSubscription = () => {
         },
         onSuccess: ({ data }) => {
             window.location.href = data;
+            queryClient.invalidateQueries({ queryKey: ['subscription'] });
             queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
         },
-        onError: (error) => {
-            toast.error(error.message || "Failed to create subscription URL")
+        onError: () => {
+            toast.error("Failed to create subscription URL")
         }
     });
     return mutation
