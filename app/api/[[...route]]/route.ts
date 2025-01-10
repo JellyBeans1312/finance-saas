@@ -20,12 +20,25 @@ const app = new Hono().basePath('/api')
 
 app.use('/api/*', cors({
     origin: [
+        process.env.NEXT_PUBLIC_APP_URL!,
         'https://coreledger.app', 
         'http://localhost:3000', 
         'https://app.lemonsqueezy.com',
     ],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
+    allowHeaders: [
+        'Content-Type',
+        'Authorization',
+        'X-CSRF-Token',
+        'X-Requested-With',
+        'Accept',
+        'Accept-Version',
+        'Content-Length',
+        'Content-MD5',
+        'Content-Type',
+        'Date',
+        'X-Api-Version'
+    ],
     exposeHeaders: ['Content-Length', 'X-Requested-With'],
     maxAge: 86400,
     credentials: true,
