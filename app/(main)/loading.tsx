@@ -13,7 +13,6 @@ const LoadingPage = () => {
 
     return (
         <div className="h-screen flex flex-col items-center justify-center bg-background">
-            {/* Logo or Brand Icon */}
             <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -62,7 +61,7 @@ const LoadingPage = () => {
                 </motion.span>
             </motion.div>
 
-            {/* Optional Progress Bar */}
+            {/* Progress Bar */}
             <motion.div
                 className="mt-8 h-1 w-48 bg-muted overflow-hidden rounded-full"
                 initial={{ opacity: 0 }}
