@@ -18,7 +18,12 @@ export const runtime = 'nodejs'
 
 const app = new Hono().basePath('/api')
 
-app.use('/api/*', cors({
+app.use('/api/*',   
+    async (c) => {
+    console.log('Request origin ', c.req.header('origin'))
+    return c.json({ message: 'Hello World' })
+  },
+  cors({
     origin: [
         process.env.NEXT_PUBLIC_APP_URL!,
         'https://coreledger.app', 
@@ -42,7 +47,8 @@ app.use('/api/*', cors({
     exposeHeaders: ['Content-Length', 'X-Requested-With'],
     maxAge: 86400,
     credentials: true,
-  }));
+  })
+);
 
 const routes = app
     .route("/accounts", accounts)

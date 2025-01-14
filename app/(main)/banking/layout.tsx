@@ -37,6 +37,7 @@ const BankingLayout = ({children} : Props) => {
     if (shouldBlockFeature(AppFeatures.BANKING) && !isLoading) {
         return (
             <motion.div
+                key={pathname}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -58,8 +59,8 @@ const BankingLayout = ({children} : Props) => {
     }
 
     return (
-        <Suspense fallback={<BankingLoadingSkeleton />}>
             <motion.div
+                key={pathname}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -88,12 +89,13 @@ const BankingLayout = ({children} : Props) => {
                 </div>
             )}
             <Header>
-                <WelcomeMsg />
-                <Filters/>
+                    <WelcomeMsg />
+                    <Filters/>
                 </Header>
-                {children}
+                <Suspense fallback={<BankingLoadingSkeleton />}>
+                    {children}
+                </Suspense>
             </motion.div>
-        </Suspense>
     )
 }
 
