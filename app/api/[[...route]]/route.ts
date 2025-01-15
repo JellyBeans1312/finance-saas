@@ -20,11 +20,7 @@ export const runtime = 'nodejs'
 
 const app = new Hono().basePath('/api')
 
-app.use('/api/*',   
-    async (c) => {
-    console.log('Request origin ', c.req.header('origin'))
-    return c.json({ message: 'Hello World' })
-  },
+app.use('/api/*',
   cors({
     origin: [
         process.env.NEXT_PUBLIC_APP_URL!,
