@@ -30,6 +30,11 @@ app.use('/api/*',
         process.env.NEXT_PUBLIC_APP_URL!,
         'https://www.coreledger.app',
         'https://app.lemonsqueezy.com',
+        'https://clerk.com',
+        'https://clerk.dev',
+        'https://clerk.coreledger.app',
+        'https://accounts.coreledger.app',
+        'https://*.clerk.accounts.dev',
     ],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowHeaders: [
@@ -43,7 +48,8 @@ app.use('/api/*',
         'Content-MD5',
         'Content-Type',
         'Date',
-        'X-Api-Version'
+        'X-Api-Version',
+        'Clerk-Frontend-Api',
     ],
     exposeHeaders: ['Content-Length', 'X-Requested-With'],
     maxAge: 86400,
@@ -68,12 +74,12 @@ app.use('*',
     }
 );
 
-// Add a debug endpoint temporarily
 app.get('/api/debug/env', async (c) => {
   return c.json({
     appUrl: process.env.NEXT_PUBLIC_APP_URL,
     nodeEnv: process.env.NODE_ENV,
-    // Add other non-sensitive env vars
+    clerkPublishableKey: process.env.CLERK_PUBLISHABLE_KEY ? 'set' : 'not set',
+    clerkSecretKey: process.env.CLERK_SECRET_KEY ? 'set' : 'not set',
   })
 });
 
