@@ -26,7 +26,8 @@ app.use('/api/*',
   cors({
     origin: [
         process.env.NEXT_PUBLIC_APP_URL!,
-        'https://coreledger.app', 
+        'https://coreledger.app',
+        'https://www.coreledger.app',
         'http://localhost:3000', 
         'https://app.lemonsqueezy.com',
     ],

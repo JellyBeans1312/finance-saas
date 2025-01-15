@@ -34,7 +34,7 @@ const BankingLayout = ({children} : Props) => {
     const router = useRouter();
     const pathname = usePathname();
 
-    if (shouldBlockFeature(AppFeatures.BANKING) && !isLoading) {
+    if (shouldBlockFeature(AppFeatures.BANKING)) {
         return (
             <motion.div
                 key={pathname}
