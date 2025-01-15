@@ -53,7 +53,7 @@ app.use('/api/*',
   })
 );
 
-app.use('*', 
+const errorHandler = app.use('*', 
     async (c, next) => {
         try {
             await next()
@@ -70,7 +70,7 @@ app.use('*',
     }
 );
 
-app.get('/api/debug/env', async (c) => {
+const debugEnv = app.get('/api/debug/env', async (c) => {
   return c.json({
     appUrl: process.env.NEXT_PUBLIC_APP_URL,
     nodeEnv: process.env.NODE_ENV,
@@ -79,7 +79,7 @@ app.get('/api/debug/env', async (c) => {
   })
 });
 
-app.get('/api/debug/db', async (c) => {
+const debugDb = app.get('/api/debug/db', async (c) => {
     try {
       // Simple query to test DB connection
       const result = await db.select().from(subscriptionsTable).limit(1)
@@ -103,6 +103,9 @@ const routes = app
     .route('/invoices', invoices)
     .route('/webhooks/plaid', plaidWebhook)
     .route('/webhooks/subscriptions', lemonsqueezyWebhook)
+    .route('/debug/env', debugEnv)
+    .route('/debug/db', debugDb)
+    .route('*', errorHandler)
 
 export const GET = handle(app);
 export const POST = handle(app);
