@@ -53,6 +53,15 @@ app.use('/api/*',
   })
 );
 
+app.use('*', async (c, next) => {
+    console.log('Request received:', {
+      path: c.req.path,
+      method: c.req.method,
+      origin: c.req.header('origin')
+    });
+    await next();
+  });
+  
 app.use('*', 
     async (c, next) => {
         try {
