@@ -17,20 +17,26 @@ const app = new Hono()
         '/current',
         clerkMiddleware(),
         async (c) => {
-            const auth = getAuth(c);
+            try {
+                const auth = getAuth(c);
 
-            if(!auth?.userId) {
-                return c.json({ error: "Unauthorized"}, 401);
-            };
-
-            const [ subscription ] = await db
-            .select()
-            .from(subscriptions)
-            .where(
-                eq(subscriptions.userId, auth.userId)
-            )
-
-            return c.json({ data: subscription || null })
+                if(!auth?.userId) {
+                    return c.json({ error: "Unauthorized"}, 401);
+                };
+    
+                const [ subscription ] = await db
+                .select()
+                .from(subscriptions)
+                .where(
+                    eq(subscriptions.userId, auth.userId)
+                )
+                console.log('Subscription result: ', subscription);
+    
+                return c.json({ data: subscription || null })
+            } catch(error) {
+                console.error('Subscription error: ', error);
+                throw error;
+            }
         }
     )
     .post(

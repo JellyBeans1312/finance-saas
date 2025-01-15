@@ -11,6 +11,8 @@ import subscriptions from './routes/subscriptions';
 import invoices from './routes/sales/invoices';
 import plaidWebhook from './routes/webhooks/plaid';
 import lemonsqueezyWebhook from './routes/webhooks/subscriptions';
+import { db } from '@/db/drizzle';
+import { subscriptions as subscriptionsTable } from '@/db/schema';
 
 
 export const runtime = 'nodejs'
@@ -26,9 +28,7 @@ app.use('/api/*',
   cors({
     origin: [
         process.env.NEXT_PUBLIC_APP_URL!,
-        'https://coreledger.app',
         'https://www.coreledger.app',
-        'http://localhost:3000', 
         'https://app.lemonsqueezy.com',
     ],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -50,6 +50,46 @@ app.use('/api/*',
     credentials: true,
   })
 );
+
+app.use('*', 
+    async (c, next) => {
+        try {
+            await next()
+        } catch (error) {
+            console.error(error, {
+                path: c.req.url,
+                error: error instanceof Error ? error.message : error
+            });
+            return c.json({
+                error: 'Internal Server Error',
+                details: process.env.NODE_ENV === 'production' ? undefined : error
+            }, 500)
+        }
+    }
+);
+
+// Add a debug endpoint temporarily
+app.get('/api/debug/env', async (c) => {
+  return c.json({
+    appUrl: process.env.NEXT_PUBLIC_APP_URL,
+    nodeEnv: process.env.NODE_ENV,
+    // Add other non-sensitive env vars
+  })
+});
+
+app.get('/api/debug/db', async (c) => {
+    try {
+      // Simple query to test DB connection
+      const result = await db.select().from(subscriptionsTable).limit(1)
+      return c.json({ success: true, result })
+    } catch (error) {
+      console.error('DB Error:', error)
+      return c.json({ 
+        error: 'Database Error',
+        details: process.env.NODE_ENV === 'development' ? error : undefined
+      }, 500)
+    }
+  });
 
 const routes = app
     .route("/accounts", accounts)
