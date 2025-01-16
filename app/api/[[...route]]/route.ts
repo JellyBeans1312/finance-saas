@@ -13,7 +13,7 @@ import plaidWebhook from './routes/webhooks/plaid';
 import lemonsqueezyWebhook from './routes/webhooks/subscriptions';
 import { db } from '@/db/drizzle';
 import { subscriptions as subscriptionsTable } from '@/db/schema';
-import { clerkMiddleware } from '@hono/clerk-auth';
+import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
 
 
 export const runtime = 'nodejs'
@@ -21,29 +21,42 @@ export const runtime = 'nodejs'
 
 const app = new Hono().basePath('/api')
 
-app.get('/debug/clerk', async (c) => {
+app.get('/test', async (c) => {
     return c.json({
-      environment: process.env.NODE_ENV,
-      hasPublishableKey: !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
-      publishableKeyLength: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.length || 0,
-      hasSecretKey: !!process.env.CLERK_SECRET_KEY,
-      secretKeyLength: process.env.CLERK_SECRET_KEY?.length || 0,
-      // Don't include the actual keys in production!
-      keys: process.env.NODE_ENV === 'development' ? {
-        publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
-        secretKey: '[REDACTED]'
-      } : undefined
+      message: 'API is working',
+      timestamp: new Date().toISOString()
     });
   });
 
 app.use('*', async (c, next) => {
-    console.log('Environment Check:', {
-      publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? 'set' : 'not set',
-      secretKey: process.env.CLERK_SECRET_KEY ? 'set' : 'not set',
-      env: process.env.NODE_ENV,
-    });
-    await next();
+    console.log('Request path:', c.req.path);
+    try {
+      await next();
+    } catch (error) {
+      console.error('Middleware error:', {
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      throw error;
+    }
   });
+
+  app.get('/test-auth', async (c) => {
+    try {
+      const auth = getAuth(c);
+      return c.json({
+        authenticated: !!auth?.userId,
+        userId: auth?.userId || null,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Auth test error:', error);
+      return c.json({
+        error: 'Auth test failed',
+        details: process.env.NODE_ENV === 'development' ? error : undefined
+      }, 500);
+    }
+});
 
 app.use('/api/*',
   cors({
@@ -78,10 +91,15 @@ app.use('/api/*',
   })
 );
 
-app.use('*', clerkMiddleware({
-    publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
-    secretKey: process.env.CLERK_SECRET_KEY,
-  }));
+try {
+    app.use('*', clerkMiddleware({
+      publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
+      secretKey: process.env.CLERK_SECRET_KEY!,
+    }));
+  } catch (error) {
+    console.error('Clerk initialization error:', error);
+    throw error;
+  }
   
 
 const routes = app
