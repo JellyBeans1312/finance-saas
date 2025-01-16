@@ -21,6 +21,21 @@ export const runtime = 'nodejs'
 
 const app = new Hono().basePath('/api')
 
+app.get('/debug/clerk', async (c) => {
+    return c.json({
+      environment: process.env.NODE_ENV,
+      hasPublishableKey: !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+      publishableKeyLength: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.length || 0,
+      hasSecretKey: !!process.env.CLERK_SECRET_KEY,
+      secretKeyLength: process.env.CLERK_SECRET_KEY?.length || 0,
+      // Don't include the actual keys in production!
+      keys: process.env.NODE_ENV === 'development' ? {
+        publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+        secretKey: '[REDACTED]'
+      } : undefined
+    });
+  });
+
 app.use('*', async (c, next) => {
     console.log('Environment Check:', {
       publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? 'set' : 'not set',
