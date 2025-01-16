@@ -15,7 +15,10 @@ setupLemon();
 const app = new Hono()
     .get(
         '/current',
-        clerkMiddleware(),
+        clerkMiddleware({
+            publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
+            secretKey: process.env.CLERK_SECRET_KEY!,
+          }),
         async (c) => {
             try {
                 const auth = getAuth(c);
@@ -41,7 +44,10 @@ const app = new Hono()
     )
     .post(
         '/checkout',
-        clerkMiddleware(),
+        clerkMiddleware({
+            publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
+            secretKey: process.env.CLERK_SECRET_KEY!,
+          }),
         zValidator('json', z.object({
             feature: z.nativeEnum(AppFeatures)
         })),
@@ -112,7 +118,10 @@ const app = new Hono()
     )
     .post(
         '/cancel',
-        clerkMiddleware(),
+        clerkMiddleware({
+            publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
+            secretKey: process.env.CLERK_SECRET_KEY!,
+          }),
         async (c) => {
             const auth = getAuth(c);
 

@@ -21,42 +21,13 @@ export const runtime = 'nodejs'
 
 const app = new Hono().basePath('/api')
 
-app.get('/test', async (c) => {
-    return c.json({
-      message: 'API is working',
-      timestamp: new Date().toISOString()
-    });
-  });
-
 app.use('*', async (c, next) => {
-    console.log('Request path:', c.req.path);
-    try {
-      await next();
-    } catch (error) {
-      console.error('Middleware error:', {
-        error: error instanceof Error ? error.message : error,
-        stack: error instanceof Error ? error.stack : undefined
-      });
-      throw error;
-    }
+    console.log('Request:', {
+      path: c.req.path,
+      method: c.req.method,
+    });
+    await next();
   });
-
-  app.get('/test-auth', async (c) => {
-    try {
-      const auth = getAuth(c);
-      return c.json({
-        authenticated: !!auth?.userId,
-        userId: auth?.userId || null,
-        timestamp: new Date().toISOString()
-      });
-    } catch (error) {
-      console.error('Auth test error:', error);
-      return c.json({
-        error: 'Auth test failed',
-        details: process.env.NODE_ENV === 'development' ? error : undefined
-      }, 500);
-    }
-});
 
 app.use('/api/*',
   cors({
@@ -91,15 +62,20 @@ app.use('/api/*',
   })
 );
 
-try {
-    app.use('*', clerkMiddleware({
-      publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
-      secretKey: process.env.CLERK_SECRET_KEY!,
-    }));
-  } catch (error) {
-    console.error('Clerk initialization error:', error);
-    throw error;
-  }
+const clerk = clerkMiddleware({
+    publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
+    secretKey: process.env.CLERK_SECRET_KEY!,
+  });
+  
+  app.get('/test', (c) => c.json({ ok: true }));
+  
+  app.get('/test-auth', clerk, async (c) => {
+    const auth = getAuth(c);
+    return c.json({
+      userId: auth?.userId,
+      sessionId: auth?.sessionId
+    });
+  });
   
 
 const routes = app
