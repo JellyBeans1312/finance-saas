@@ -13,12 +13,22 @@ import plaidWebhook from './routes/webhooks/plaid';
 import lemonsqueezyWebhook from './routes/webhooks/subscriptions';
 import { db } from '@/db/drizzle';
 import { subscriptions as subscriptionsTable } from '@/db/schema';
+import { clerkMiddleware } from '@hono/clerk-auth';
 
 
 export const runtime = 'nodejs'
 
 
 const app = new Hono().basePath('/api')
+
+app.use('*', async (c, next) => {
+    console.log('Environment Check:', {
+      publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? 'set' : 'not set',
+      secretKey: process.env.CLERK_SECRET_KEY ? 'set' : 'not set',
+      env: process.env.NODE_ENV,
+    });
+    await next();
+  });
 
 app.use('/api/*',
   cors({
@@ -53,54 +63,11 @@ app.use('/api/*',
   })
 );
 
-app.use('*', async (c, next) => {
-    console.log('Request received:', {
-      path: c.req.path,
-      method: c.req.method,
-      origin: c.req.header('origin')
-    });
-    await next();
-  });
+app.use('*', clerkMiddleware({
+    publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    secretKey: process.env.CLERK_SECRET_KEY,
+  }));
   
-app.use('*', 
-    async (c, next) => {
-        try {
-            await next()
-        } catch (error) {
-            console.error(error, {
-                path: c.req.url,
-                error: error instanceof Error ? error.message : error
-            });
-            return c.json({
-                error: 'Internal Server Error',
-                details: process.env.NODE_ENV === 'production' ? undefined : error
-            }, 500)
-        }
-    }
-);
-
-app.get('/debug/env', async (c) => {
-  return c.json({
-    appUrl: process.env.NEXT_PUBLIC_APP_URL,
-    nodeEnv: process.env.NODE_ENV,
-    clerkPublishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? 'set' : 'not set',
-    clerkSecretKey: process.env.CLERK_SECRET_KEY ? 'set' : 'not set',
-  })
-});
-
-app.get('/debug/db', async (c) => {
-    try {
-      // Simple query to test DB connection
-      const result = await db.select().from(subscriptionsTable).limit(1)
-      return c.json({ success: true, result })
-    } catch (error) {
-      console.error('DB Error:', error)
-      return c.json({ 
-        error: 'Database Error',
-        details: process.env.NODE_ENV === 'development' ? error : undefined
-      }, 500)
-    }
-  });
 
 const routes = app
     .route("/accounts", accounts)
