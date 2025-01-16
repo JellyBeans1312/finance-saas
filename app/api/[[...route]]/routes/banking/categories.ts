@@ -1,18 +1,22 @@
-import { Hono } from 'hono';
-import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
-import { and, eq, inArray } from 'drizzle-orm';
-import { zValidator } from '@hono/zod-validator';
-import { createId } from '@paralleldrive/cuid2';
 import { z } from 'zod';
 
+import { Hono } from 'hono';
+import { getAuth } from '@hono/clerk-auth';
+import { zValidator } from '@hono/zod-validator';
+
 import { db } from '@/db/drizzle';
+import { and, eq, inArray } from 'drizzle-orm';
 import { categories, insertCategorySchema } from '@/db/schema';
+
+import { createId } from '@paralleldrive/cuid2';
+
+import { clerkConfig } from '@/lib/clerk';
 
 const app = new Hono()
 
  .get(
     "/",
-    clerkMiddleware(),
+    clerkConfig,
     async (c) => {
         const auth = getAuth(c);
 
@@ -35,7 +39,7 @@ const app = new Hono()
     zValidator("param", z.object({
         id: z.string().optional(),
     })),
-    clerkMiddleware(),
+    clerkConfig,
     async (c) => {
         const auth = getAuth(c);
         const { id } = c.req.valid("param");
@@ -71,7 +75,7 @@ const app = new Hono()
   )
   .post(
     "/",
-    clerkMiddleware(),
+    clerkConfig,
     zValidator("json", insertCategorySchema.pick({
         name: true
     })),
@@ -95,7 +99,7 @@ const app = new Hono()
   )
   .post(
     "/bulk-delete",
-    clerkMiddleware(),
+    clerkConfig,
     zValidator(
         "json",
         z.object({
@@ -125,7 +129,7 @@ const app = new Hono()
   )
   .patch(
     "/:id",
-    clerkMiddleware(),
+    clerkConfig,
     zValidator(
         "param",
         z.object({ id: z.string().optional() })
@@ -168,7 +172,7 @@ const app = new Hono()
   )
   .delete(
     "/:id",
-    clerkMiddleware(),
+    clerkConfig,
     zValidator(
         "param",
         z.object({ id: z.string().optional() })

@@ -1,24 +1,23 @@
-import { Hono } from "hono";
-import { eq } from "drizzle-orm";
-
-import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
-import { db } from "@/db/drizzle";
-import { AppFeatures, subscriptions } from "@/db/schema";
-import { cancelSubscription, createCheckout, getSubscription } from "@lemonsqueezy/lemonsqueezy.js";
-import { setupLemon } from "@/lib/ls";
-import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 
+import { Hono } from "hono";
+import { getAuth } from "@hono/clerk-auth";
+import { zValidator } from "@hono/zod-validator";
 
+import { eq } from "drizzle-orm";
+import { db } from "@/db/drizzle";
+import { AppFeatures, subscriptions } from "@/db/schema";
+
+import { setupLemon } from "@/lib/ls";
+import { cancelSubscription, createCheckout, getSubscription } from "@lemonsqueezy/lemonsqueezy.js";
+
+import { clerkConfig } from "@/lib/clerk";
 setupLemon();
 
 const app = new Hono()
     .get(
         '/current',
-        clerkMiddleware({
-            publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
-            secretKey: process.env.CLERK_SECRET_KEY!,
-          }),
+        clerkConfig,
         async (c) => {
             try {
                 const auth = getAuth(c);
@@ -44,10 +43,7 @@ const app = new Hono()
     )
     .post(
         '/checkout',
-        clerkMiddleware({
-            publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
-            secretKey: process.env.CLERK_SECRET_KEY!,
-          }),
+        clerkConfig,
         zValidator('json', z.object({
             feature: z.nativeEnum(AppFeatures)
         })),
@@ -118,10 +114,7 @@ const app = new Hono()
     )
     .post(
         '/cancel',
-        clerkMiddleware({
-            publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
-            secretKey: process.env.CLERK_SECRET_KEY!,
-          }),
+        clerkConfig,
         async (c) => {
             const auth = getAuth(c);
 

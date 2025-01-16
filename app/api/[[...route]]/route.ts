@@ -11,9 +11,6 @@ import subscriptions from './routes/subscriptions';
 import invoices from './routes/sales/invoices';
 import plaidWebhook from './routes/webhooks/plaid';
 import lemonsqueezyWebhook from './routes/webhooks/subscriptions';
-import { db } from '@/db/drizzle';
-import { subscriptions as subscriptionsTable } from '@/db/schema';
-import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
 
 
 export const runtime = 'nodejs'
@@ -61,23 +58,7 @@ app.use('/api/*',
     credentials: true,
   })
 );
-
-const clerk = clerkMiddleware({
-    publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
-    secretKey: process.env.CLERK_SECRET_KEY!,
-  });
   
-  app.get('/test', (c) => c.json({ ok: true }));
-  
-  app.get('/test-auth', clerk, async (c) => {
-    const auth = getAuth(c);
-    return c.json({
-      userId: auth?.userId,
-      sessionId: auth?.sessionId
-    });
-  });
-  
-
 const routes = app
     .route("/accounts", accounts)
     .route('/categories', categories)

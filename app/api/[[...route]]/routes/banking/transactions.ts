@@ -1,5 +1,17 @@
+import { z } from 'zod';
+
 import { Hono } from 'hono';
-import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
+import { getAuth } from '@hono/clerk-auth';
+import { zValidator } from '@hono/zod-validator';
+
+import { 
+    transactions,
+    insertTransactionSchema,
+    categories,
+    accounts
+} from '@/db/schema';
+import { db } from '@/db/drizzle';
+
 import { 
     and, 
     desc, 
@@ -9,18 +21,13 @@ import {
     lte, 
     sql,
 } from 'drizzle-orm';
-import { zValidator } from '@hono/zod-validator';
+
 import { createId } from '@paralleldrive/cuid2';
-import { z } from 'zod';
+
 import { subDays, parse } from 'date-fns'
 
-import { db } from '@/db/drizzle';
-import { 
-    transactions,
-    insertTransactionSchema,
-    categories,
-    accounts
- } from '@/db/schema';
+
+import { clerkConfig } from '@/lib/clerk';
 
 const app = new Hono()
 
@@ -31,7 +38,7 @@ const app = new Hono()
         to: z.string().optional(),
         accountId: z.string().optional()
     })),
-    clerkMiddleware(),
+    clerkConfig,
     async (c) => {
         const auth = getAuth(c);
         const { from, to, accountId } = c.req.valid("query");
@@ -83,7 +90,7 @@ const app = new Hono()
     zValidator("param", z.object({
         id: z.string().optional(),
     })),
-    clerkMiddleware(),
+    clerkConfig,
     async (c) => {
         const auth = getAuth(c);
         const { id } = c.req.valid("param");
@@ -125,7 +132,7 @@ const app = new Hono()
   )
   .post(
     "/",
-    clerkMiddleware(),
+    clerkConfig,
     zValidator("json", insertTransactionSchema.omit({
         id: true,
     })),
@@ -154,7 +161,7 @@ const app = new Hono()
   )
   .post(
     "/bulk-create",
-    clerkMiddleware(),
+    clerkConfig,
     zValidator(
         "json",
         z.array(
@@ -190,7 +197,7 @@ const app = new Hono()
   )
   .post(
     "/bulk-delete",
-    clerkMiddleware(),
+    clerkConfig,
     zValidator(
         "json",
         z.object({
@@ -229,7 +236,7 @@ const app = new Hono()
   )
   .patch(
     "/:id",
-    clerkMiddleware(),
+    clerkConfig,
     zValidator(
         "param",
         z.object({ id: z.string().optional() })
@@ -282,7 +289,7 @@ const app = new Hono()
   )
   .delete(
     "/:id",
-    clerkMiddleware(),
+    clerkConfig,
     zValidator(
         "param",
         z.object({ id: z.string().optional() })

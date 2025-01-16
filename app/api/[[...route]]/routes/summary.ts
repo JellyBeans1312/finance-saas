@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { subDays, parse, differenceInDays } from "date-fns";
 import { calculatePercentageChange, fillMissingDays } from "@/lib/utils";
 
+import { clerkConfig } from "@/lib/clerk";
 
 // TODO: Refactor to 
     // Allow banking route
@@ -17,7 +18,7 @@ import { calculatePercentageChange, fillMissingDays } from "@/lib/utils";
 const app = new Hono()
 .get(
     "/",
-    clerkMiddleware(),
+    clerkConfig,
     zValidator(
         "query",
         z.object({

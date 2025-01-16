@@ -3,7 +3,6 @@ import { Hono } from 'hono';
 import { Resend } from 'resend';
 import { eq, count, and, inArray, lte, gte, sum, sql } from 'drizzle-orm';
 import { addDays } from 'date-fns';
-import { clerkMiddleware } from '@hono/clerk-auth';
 import { getAuth } from '@hono/clerk-auth';
 import { zValidator } from '@hono/zod-validator';
 import { deleteLogoFromS3, uploadLogoToS3 } from '@/lib/s3';
@@ -24,6 +23,8 @@ import { generateInvoicePDF } from '@/features/invoices/hooks/generate-invoice-p
 // Only validate what we need from the client
 import { invoiceValidationSchema } from '@/db/schema';
 
+import { clerkConfig } from '@/lib/clerk';
+
 // Generate a unique invoice number
 async function generateInvoiceNumber(): Promise<string> {
     const [result] = await db.select({ count: count() })
@@ -37,7 +38,7 @@ async function generateInvoiceNumber(): Promise<string> {
 const app = new Hono()
 .post(
     '/',
-    clerkMiddleware(),
+    clerkConfig,
     zValidator("json", invoiceValidationSchema),
     async (c) => {
         const auth = getAuth(c);
@@ -122,7 +123,7 @@ const app = new Hono()
 )
 .get(
     "/",
-    clerkMiddleware(),
+    clerkConfig,
     async (c) => {
         const auth = getAuth(c);
 
@@ -144,7 +145,7 @@ const app = new Hono()
     zValidator("param", z.object({
         id: z.string().optional(),
     })),
-    clerkMiddleware(),
+    clerkConfig,
     async (c) => {
         const auth = getAuth(c);
         const { id } = c.req.valid("param");
@@ -184,7 +185,7 @@ const app = new Hono()
   )
   .post(
     "/bulk-delete",
-    clerkMiddleware(),
+    clerkConfig,
     zValidator(
         "json",
         z.object({
@@ -214,7 +215,7 @@ const app = new Hono()
   )
   .patch(
     "/:id",
-    clerkMiddleware(),
+    clerkConfig,
     zValidator(
         "param",
         z.object({ id: z.string().optional()})
@@ -301,7 +302,7 @@ const app = new Hono()
   )
   .delete(
     "/:id",
-    clerkMiddleware(),
+    clerkConfig,
     zValidator(
         "param",
         z.object({ id: z.string().optional() })
@@ -358,7 +359,7 @@ const app = new Hono()
   // Send Invoice via Resend
   .post(
     '/send-invoice',
-    clerkMiddleware(),
+    clerkConfig,
     zValidator('json', z.object({
         invoiceId: z.string(),
         message: z.string().optional(),
@@ -424,7 +425,7 @@ const app = new Hono()
   // MOVE THIS TO SUMMARY 
   .get(
     '/summary',
-    clerkMiddleware(),
+    clerkConfig,
     async (c) => {
         const auth = getAuth(c);
 
@@ -436,7 +437,6 @@ const app = new Hono()
             where: eq(invoices.userId, auth.userId),
         });
 
-        
         // Start of Summary to be moved to summary.ts
         async function getInvoiceSummary(
             userId: string,

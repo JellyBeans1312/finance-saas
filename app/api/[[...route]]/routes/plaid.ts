@@ -13,10 +13,12 @@ import { accounts, connectedBanks, transactions, categories } from '@/db/schema'
 import { createId } from '@paralleldrive/cuid2';
 import { convertAmountToMiliunits } from '@/lib/utils';
 
+import { clerkConfig } from '@/lib/clerk';
+
 const app = new Hono()
 .get(
   "/connected-bank",
-  clerkMiddleware(),
+  clerkConfig,
   async (c) => {
     const auth = getAuth(c);
 
@@ -39,7 +41,7 @@ const app = new Hono()
 )
 .delete(
   "/connected-bank",
-  clerkMiddleware(),
+  clerkConfig,
   async (c) => {
     const auth = getAuth(c);
 
@@ -82,7 +84,7 @@ const app = new Hono()
 )
 .post(
   "/create-link-token",
-  clerkMiddleware(),
+  clerkConfig,
   async (c) => {
     const auth = getAuth(c);
 
@@ -107,7 +109,7 @@ const app = new Hono()
 )
 .post(
   "/exchange-public-token",
-  clerkMiddleware(),
+  clerkConfig,
   zValidator(
     "json",
     z.object({
@@ -208,7 +210,7 @@ const app = new Hono()
 // Update Link Token
 .post(
   "/create-update-link-token",
-  clerkMiddleware(),
+  clerkConfig,
   zValidator(
     "json",
     z.object({

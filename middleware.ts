@@ -9,8 +9,6 @@ export default clerkMiddleware(( auth, request) => {
   }
 
   return NextResponse.next()
-}, {
-  debug: true
 });
 
 
