@@ -1,14 +1,12 @@
 // server side only
-import chromium from 'chrome-aws-lambda';
-
-import puppeteer from 'puppeteer';
-import type { Browser, Page } from 'puppeteer';
+import type { Browser as CoreBrowser, Page as CorePage } from 'puppeteer-core';
+import type { Browser as PuppeteerBrowser, Page as PuppeteerPage } from 'puppeteer';
 
 import type { Invoice } from "@/features/invoices/types";
 import { InvoiceEmail } from "@/components/sales/invoice-email";
 
 const isProd = process.env.NODE_ENV === 'production';
-let browserInstance: Browser | null = null;
+let browserInstance: CoreBrowser | PuppeteerBrowser | null = null;
 
 const VIEWPORT = {
     width: 1200,
@@ -28,15 +26,19 @@ const PDF_OPTIONS = {
     preferCSSPageSize: true,
 } as const;
 
-async function initBrowser() {
+async function initBrowser(): Promise<CoreBrowser | PuppeteerBrowser> {
     try {
-        if (isProd) {    
+        if (isProd) {
+            const chromium = await import ('@sparticuz/chromium');
+            const puppeteer = await import('puppeteer-core');
             return await puppeteer.launch({
-                args: [...chromium.args, '--no-sandbox'],
-                executablePath: await chromium.executablePath,
-                headless: chromium.headless,
+                args: chromium.default.args,
+                defaultViewport: chromium.default.defaultViewport,
+                executablePath: await chromium.default.executablePath(),
+                headless: chromium.default.headless,
             });
         } else {
+            const puppeteer = await import('puppeteer');
             return await puppeteer.launch({
                 headless: true,
                 args: ['--no-sandbox'],
@@ -48,9 +50,9 @@ async function initBrowser() {
     }
 }
 
-async function getBrowser(): Promise<Browser> {
+async function getBrowser(): Promise<CoreBrowser | PuppeteerBrowser> {
     try {
-        if (!browserInstance || !browserInstance.isConnected()) {
+        if (!browserInstance || !browserInstance.connected) {
             browserInstance = await initBrowser();
         }
         return browserInstance;
@@ -60,7 +62,7 @@ async function getBrowser(): Promise<Browser> {
     }
 }
 
-async function setupPage(page: Page, invoice: Invoice): Promise<void> {
+async function setupPage(page: CorePage | PuppeteerPage, invoice: Invoice): Promise<void> {
     await page.setViewport(VIEWPORT);
 
     const htmlContent = InvoiceEmail({ invoice });
@@ -73,7 +75,7 @@ async function setupPage(page: Page, invoice: Invoice): Promise<void> {
 
 export async function generateInvoicePDF(invoice: Invoice, message?: string): Promise<Buffer> {
     const browser = await getBrowser();
-    let page: Page | null = null;
+    let page: CorePage | PuppeteerPage | null = null;
 
     try {
         page = await browser.newPage();
