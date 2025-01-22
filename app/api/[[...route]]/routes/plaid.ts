@@ -94,11 +94,13 @@ const app = new Hono()
 
     const tokenResponse = await plaidClient.linkTokenCreate({
       user: { client_user_id: auth.userId || '' },
-      client_name: "FinSync",
+      client_name: "CoreLedger",
       language: 'en',
       products: [Products.Transactions],
       country_codes: [CountryCode.Us],
-      redirect_uri: process.env.PLAID_SANDBOX_REDIRECT_URI,
+      redirect_uri: process.env.NODE_ENV === 'production' 
+      ? process.env.PLAID_REDIRECT_URI 
+      : process.env.PLAID_SANDBOX_REDIRECT_URI,
       //TODO: enable_multi_item_link: true, NEED SESSION_FINISHED WEBHOOK
     });
 

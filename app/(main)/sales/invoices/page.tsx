@@ -17,7 +17,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 import { columns } from './columns';
-import InvoicesPageSkeleton from './loading';
 
 import { useGetInvoices } from '@/features/invoices/api/use-get-invoices';
 import { useBulkDeleteInvoices } from '@/features/invoices/api/use-bulk-delete-invoice';
