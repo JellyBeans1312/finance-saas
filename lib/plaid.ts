@@ -1,12 +1,11 @@
 import { connectedBanks } from '@/db/schema';
-import { config } from 'dotenv';
 import { Configuration, CountryCode, PlaidApi, PlaidEnvironments } from 'plaid';
 
 
 const plaidClient = new PlaidApi(
     new Configuration({
         basePath: process.env.NODE_ENV === 'production' 
-            ? PlaidEnvironments.sandbox 
+            ? PlaidEnvironments.production 
             : PlaidEnvironments.sandbox,
         baseOptions: {
             headers: {
@@ -19,7 +18,7 @@ const plaidClient = new PlaidApi(
 );
 
 const sessionOptions = {
-    cookieName: 'finsync_cookiename',
+    cookieName: 'coreledger_cookiename',
     password: 'complex_password_at_least_32_characters_long',
     cookieOptions: {
         secure: process.env.NODE_ENV === 'production',
@@ -33,7 +32,7 @@ async function createUpdateLinkToken(
     try {
       const tokenResponse = await plaidClient.linkTokenCreate({
         user: { client_user_id: connectedBank.userId },
-        client_name: "FinSync",
+        client_name: "CoreLedger",
         language: 'en',
         country_codes: [CountryCode.Us],
         access_token: connectedBank.accessToken,

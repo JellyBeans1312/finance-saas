@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
+import { getAuth } from '@hono/clerk-auth';
 
 import { plaidClient, createUpdateLinkToken } from '@/lib/plaid';
 import { CountryCode, Products } from 'plaid';
