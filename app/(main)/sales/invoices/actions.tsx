@@ -28,11 +28,11 @@ import { useDeleteInvoice } from '@/features/invoices/api/use-delete-invoice';
 import { useDuplicateInvoice } from '@/features/invoices/hooks/use-duplicate-invoice';
 import { usePushEditInvoice } from '@/features/invoices/hooks/use-edit-invoice';
 import { useEditInvoice } from '@/features/invoices/api/use-edit-invoice';
-import { Invoice, InvoiceStatus } from '@/features/invoices/types';
+import { InvoiceStatus } from '@/features/invoices/types';
 import { useGetInvoice } from '@/features/invoices/api/use-get-invoice';
 import { handlePrintInvoice } from '@/components/sales/print-invoice';
 import { useSendInvoice } from '@/features/invoices/api/use-send-invoice';
-import { downloadInvoicePdf } from '@/features/invoices/hooks/download-invoice-pdf';
+import { useDownloadInvoice } from '@/features/invoices/api/use-download-invoice';
 
 type Props = {
     id: string;
@@ -48,6 +48,7 @@ export const Actions = ({ id }: Props) => {
     const deleteInvoice = useDeleteInvoice(id);
     const { data: invoice } = useGetInvoice(id);
     const { mutate: sendInvoiceMutation, isPending: isSendingInvoice } = useSendInvoice();
+    const { mutate: downloadInvoiceMutation, isPending: isDownloadingInvoice } = useDownloadInvoice();
 
     const [ConfirmationDialog, confirm] = useConfirm(
         "Are you sure?",
@@ -93,7 +94,7 @@ export const Actions = ({ id }: Props) => {
 
     const handleDownloadPdf = () => {
         if(invoice) {
-            downloadInvoicePdf(invoice);
+            downloadInvoiceMutation(invoice);
         }
     };
 
@@ -142,7 +143,7 @@ export const Actions = ({ id }: Props) => {
 
 
 
-    const isPending = deleteInvoice.isPending || isSendingInvoice;
+    const isPending = deleteInvoice.isPending || isSendingInvoice || isDownloadingInvoice;
 
     return (
         <>

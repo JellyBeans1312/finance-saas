@@ -2,7 +2,6 @@ import { Hono } from 'hono';
 import crypto from 'crypto';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db/drizzle';
-import { handle } from 'hono/vercel';
 import { subscriptions } from '@/db/schema';
 import { createId } from '@paralleldrive/cuid2';
 
@@ -43,6 +42,7 @@ const lemonsqueezyWebhook = new Hono()
             const status = payload.data.attributes.status;
             const feature = payload.meta.custom_data.feature;
             const existingSubscriptionId = payload.meta.custom_data.existing_subscription_id;
+            
             const [ existing ] = await db
                 .select()
                 .from(subscriptions)

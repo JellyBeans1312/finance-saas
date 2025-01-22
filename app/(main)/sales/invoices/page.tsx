@@ -15,10 +15,8 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 
 import { columns } from './columns';
-import InvoicesPageSkeleton from './loading';
 
 import { useGetInvoices } from '@/features/invoices/api/use-get-invoices';
 import { useBulkDeleteInvoices } from '@/features/invoices/api/use-bulk-delete-invoice';
@@ -69,7 +67,6 @@ export default function InvoiceOverviewPage() {
 
 
     return (
-        <Suspense fallback={<InvoicesPageSkeleton />}>
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -126,6 +123,5 @@ export default function InvoiceOverviewPage() {
                     </CardContent>
                 </Card>
             </motion.div>
-        </Suspense>
     );
 };

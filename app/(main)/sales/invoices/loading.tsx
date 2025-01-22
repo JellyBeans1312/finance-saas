@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 const TableLoadingSkeleton = () => (
-    <div className="rounded-md border">
-        <div className="relative w-full overflow-auto">
+    <div className="rounded-md border w-auto">
+        <div className="relative overflow-auto">
             <table className="w-full caption-bottom text-sm">
                 <thead className="[&_tr]:border-b bg-muted">
                     <tr className="border-b transition-colors">

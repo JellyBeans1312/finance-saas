@@ -1,6 +1,7 @@
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { InvoiceDataDisplay } from '@/components/sales/invoice-data-display';
 import { Invoice } from '@/features/invoices/types';
+import Image from 'next/image';
 interface InvoiceDetailsProps {
     invoice: Invoice;
     message?: string;
@@ -14,10 +15,12 @@ export const InvoiceDetails = ({ invoice, message }: InvoiceDetailsProps) => {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
                 {invoice?.imageUrl && (
-                    <img 
+                    <Image 
                         src={invoice.imageUrl} 
                         alt="Company Logo" 
                         className="w-20 h-20 object-contain" 
+                        width={80}
+                        height={80}
                     />
                 )}
             </div>
