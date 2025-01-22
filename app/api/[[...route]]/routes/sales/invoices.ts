@@ -1,8 +1,10 @@
 import { z } from 'zod';
 import { Hono } from 'hono';
 import { Resend } from 'resend';
-import { eq, count, and, inArray, lte, gte, sum, sql } from 'drizzle-orm';
+import QuickLRU from 'quick-lru';
+import { createBrotliCompress } from 'node:zlib';
 import { addDays } from 'date-fns';
+
 import { getAuth } from '@hono/clerk-auth';
 import { zValidator } from '@hono/zod-validator';
 import { deleteLogoFromS3, uploadLogoToS3 } from '@/lib/s3';
@@ -15,16 +17,86 @@ import {
     invoiceLineItems,
     insertInvoiceSchema,
 } from '@/db/schema';
+import { eq, count, and, inArray, lte, gte, sum, sql } from 'drizzle-orm';
 
 import { createId } from '@paralleldrive/cuid2';
-import { InvoiceStatus } from '@/features/invoices/types';
+import { CompressionResult, InvoiceStatus, PDFCacheEntry } from '@/features/invoices/types';
 import { generateInvoicePDF } from '@/features/invoices/hooks/generate-invoice-pdf';
 
-// Only validate what we need from the client
 import { invoiceValidationSchema } from '@/db/schema';
 
 import { clerkConfig } from '@/lib/clerk';
 
+//pdf cache and compression
+const pdfCache = new QuickLRU<string, PDFCacheEntry>({
+    maxSize: 1000,
+    maxAge: 1000 * 60 * 5
+});
+async function compressPDF(inputBuffer: Buffer): Promise<CompressionResult> {
+    return new Promise((resolve, reject) => {
+        const chunks: Buffer[] = [];
+        const compressor = createBrotliCompress();
+
+        compressor.on('data', (chunk: Buffer) => {
+            chunks.push(chunk);
+        });
+
+        compressor.on('end', () => {
+            const resultBuffer = Buffer.concat(chunks);
+            resolve({
+                buffer: resultBuffer,
+                size: resultBuffer.length
+            });
+        });
+
+        compressor.on('error', (err) => {
+            reject(err);
+        });
+
+        compressor.write(inputBuffer);
+        compressor.end();
+    });
+}
+
+
+// schema that includes date values
+const lineItemSchema = z.object({
+    id: z.string(),
+    invoiceId: z.string(),
+    description: z.string(),
+    quantity: z.number(),
+    unitPrice: z.number(),
+    amount: z.number(),
+});
+
+const invoiceSchema = z.object({
+    id: z.string(),
+    invoiceNumber: z.string(),
+    userId: z.string(),
+    clientName: z.string(),
+    clientEmail: z.string(),
+    clientPhone: z.string().optional(),
+    issueDate: z.string(),
+    dueDate: z.string(),
+    subtotal: z.number(),
+    tax: z.number(),
+    total: z.number(),
+    status: z.nativeEnum(InvoiceStatus), 
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    toAddress: z.string(),
+    fromAddress: z.string(),
+    fromEmail: z.string(),
+    fromPhone: z.string().optional(),
+    fromName: z.string(),
+    notes: z.string().optional(),
+    imageUrl: z.string().optional(),
+    lineItems: z.array(lineItemSchema),
+});
+
+const requestSchema = z.object({
+    invoice: invoiceSchema
+});
 // Generate a unique invoice number
 async function generateInvoiceNumber(): Promise<string> {
     const [result] = await db.select({ count: count() })
@@ -225,6 +297,10 @@ const app = new Hono()
         insertInvoiceSchema.pick({
             clientName: true,
             clientEmail: true,
+            toAddress: true,
+            fromAddress: true,
+            fromEmail: true,
+            fromName: true,
             issueDate: true,
             dueDate: true,
             status: true,
@@ -356,6 +432,64 @@ const app = new Hono()
         return c.json({ data })
     }
   )
+  .post(
+    '/generate-pdf',
+    clerkConfig,
+    zValidator('json', requestSchema),
+    async (c) => {
+        const { invoice } = c.req.valid('json');
+        const auth = getAuth(c);
+
+        if(!auth?.userId) {
+            return c.json({ error: "Unauthorized"}, 401);
+        }
+
+        const cacheKey = `${invoice.id}-${invoice.updatedAt}`;
+        const cachedPdf = pdfCache.get(cacheKey);
+
+        if(cachedPdf) {
+            const compressed = await compressPDF(cachedPdf.buffer);
+            return new Response(compressed.buffer, {
+                headers: {
+                    'Content-Type': 'application/pdf',
+                    'Content-Disposition': `attachment; filename=invoice-${invoice.invoiceNumber}.pdf`,
+                    'Content-Length': compressed.size.toString(),
+                    'Content-Encoding': 'br',
+                },
+            });
+        }
+        
+        const formattedInvoice = {
+            ...invoice,
+            issueDate: new Date(invoice.issueDate),
+            dueDate: new Date(invoice.dueDate),
+            createdAt: new Date(invoice.createdAt),
+            updatedAt: new Date(invoice.updatedAt),
+        }
+
+        const pdfBuffer = await generateInvoicePDF(formattedInvoice);
+
+        if(!pdfBuffer) {
+            return c.json({ error: "Failed to generate PDF"}, 500);
+        }
+
+        pdfCache.set(cacheKey, {
+            buffer: pdfBuffer,
+            timestamp: Date.now(),
+        });
+
+        const compressed = await compressPDF(pdfBuffer);
+
+        return new Response(compressed.buffer, {
+            headers: {
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': `attachment; filename=invoice-${invoice.invoiceNumber}.pdf`,
+                'Content-Length': compressed.size.toString(),
+                'Content-Encoding': 'br',
+            },
+        });
+    }
+  )
   // Send Invoice via Resend
   .post(
     '/send-invoice',
@@ -397,7 +531,8 @@ const app = new Hono()
         const resend = new Resend(process.env.RESEND_API_KEY);
         
         const { data } = await resend.emails.send({
-            from: "your-domain@resend.dev",
+            // send from coreledger with a message from where the invoice is from. 
+            from: invoice.fromEmail,
             to: invoice.clientEmail,
             subject: `Invoice ${invoice.invoiceNumber} from ${invoice.fromName}`,
             html: InvoiceEmail({ invoice: invoiceData, message }),
@@ -408,8 +543,6 @@ const app = new Hono()
                 },
             ],
         });
-
-        console.log(data);
 
         // Update invoice status
         await db.update(invoices)

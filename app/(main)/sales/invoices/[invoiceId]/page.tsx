@@ -6,7 +6,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { invoiceValidationSchema } from "@/db/schema";
 import { handlePrintInvoice } from "@/components/sales/print-invoice";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Download, Edit, Printer, ChevronDown, Send, MoreVertical } from "lucide-react";
+import { Download, Edit, Printer, ChevronDown, Send, MoreVertical, ChevronLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { 
@@ -31,9 +31,10 @@ import { InvoiceForm } from "@/features/invoices/components/invoice-form";
 import { InvoiceDetails } from "@/features/invoices/components/invoice-details";
 
 import { usePushEditInvoice } from "@/features/invoices/hooks/use-edit-invoice";
-import { downloadInvoicePdf } from "@/features/invoices/hooks/download-invoice-pdf";
+import { useDownloadInvoice } from "@/features/invoices/api/use-download-invoice";
 
-import { Invoice, InvoiceStatus } from "@/features/invoices/types";
+import { InvoiceStatus } from "@/features/invoices/types";
+import { InvoiceDetailsSkeleton } from "@/features/invoices/components/invoice-details-skeleton";
 
 export const dynamic = 'force-dynamic';
 
@@ -50,7 +51,7 @@ const InvoicePage = () => {
     const { editInvoice } = usePushEditInvoice();
     const { mutate: editInvoiceMutation } = useEditInvoice(invoiceId);
     const { mutate: sendInvoiceMutation, isPending: isSendingInvoice } = useSendInvoice();
-
+    const { mutate: downloadInvoiceMutation } = useDownloadInvoice();
     const handleSubmit = (data: z.input<typeof invoiceValidationSchema>) => {
         editInvoiceMutation({
             ...data,
@@ -71,7 +72,7 @@ const InvoicePage = () => {
         {
             label: 'Download PDF',
             icon: Download,
-            onClick: () => invoice && downloadInvoicePdf(invoice)
+            onClick: () => invoice && downloadInvoiceMutation(invoice)
         },
         {
             label: 'Edit',
@@ -99,11 +100,33 @@ const InvoicePage = () => {
     const isLoading = isLoadingInvoice || isSendingInvoice;
 
     if(isLoading || !invoice) {
-        return <div>Loading...</div>
+        return (
+            <div className="max-w-4xl mx-auto p-4 -mt-24 md:p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => router.push('/sales/invoices')}
+                    className="mb-6"
+                >
+                    <ChevronLeft className="h-4 w-4 mr-2" />
+                    Back to Invoices
+                </Button>
+                <InvoiceDetailsSkeleton />
+            </div>
+        )
     }
 
     return (
         <div className="max-w-4xl mx-auto p-4 -mt-24 md:p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.push('/sales/invoices')}
+                className="mb-6"
+            >
+                <ChevronLeft className="h-4 w-4 mr-2" />
+                Back to Invoices
+            </Button>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Invoice</h1>

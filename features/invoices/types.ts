@@ -4,21 +4,21 @@ export interface Invoice {
     userId: string,
     clientName: string,
     clientEmail: string,
-    clientPhone: string | undefined,
+    clientPhone?: string | undefined,
     issueDate: Date,
     dueDate: Date,
     subtotal: number,
     tax: number,
     total: number,
     status: InvoiceStatus,
-    notes: string | undefined,
+    notes?: string | undefined,
     createdAt: Date,
     updatedAt: Date,
     toAddress: string,
     fromAddress: string,
-    imageUrl: string | undefined,
+    imageUrl?: string | undefined,
     fromEmail: string,
-    fromPhone: string | undefined,
+    fromPhone?: string | undefined,
     fromName: string,
     lineItems: LineItem[],
 }
@@ -37,4 +37,14 @@ export enum InvoiceStatus {
     OVERDUE = 'Overdue',
     PENDING = 'Pending',
     CANCELLED = 'Cancelled'
+}
+
+export interface PDFCacheEntry {
+    buffer: Buffer;
+    timestamp: number;
+}
+
+export interface CompressionResult {
+    buffer: Buffer;
+    size: number;
 }
