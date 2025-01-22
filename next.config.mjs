@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    output: 'standalone',
     webpack: (config, { isServer }) => {
         if (!isServer) {
             config.resolve.fallback = {
@@ -8,9 +9,11 @@ const nextConfig = {
             };
         }
         if (isServer) {
-            config.externals.push({
-                'puppeteer-core': 'puppeteer-core',
-            });
+            config.externals = [
+                ...config.externals,
+                'puppeteer-core',
+                '@sparticuz/chromium'
+            ];
         }
         config.module.rules.push({
             test: /\.node$/,
@@ -19,9 +22,16 @@ const nextConfig = {
         config.resolve.alias = {
             ...config.resolve.alias,
             'chrome-aws-lambda': false,
-            'puppeteer-core': false
-          };
+        };
         return config;
+    },
+    experimental: {
+        outputFileTracingIncludes: {
+            '/api/**/*': [
+                './node_modules/@sparticuz/chromium/**/*',
+                './node_modules/puppeteer-core/**/*'
+            ],
+        },
     },
     async headers() {
         return [
