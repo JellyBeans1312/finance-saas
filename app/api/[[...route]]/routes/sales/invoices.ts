@@ -467,7 +467,18 @@ const app = new Hono()
             updatedAt: new Date(invoice.updatedAt),
         }
 
-        const pdfBuffer = await generateInvoicePDF(formattedInvoice);
+        console.log('Starting PDF generation...');
+        console.log('Invoice data:', JSON.stringify(formattedInvoice, null, 2));
+        
+        let pdfBuffer;
+        try {
+            pdfBuffer = await generateInvoicePDF(formattedInvoice);
+            console.log('PDF generated successfully');
+        } catch (error: any) {
+            console.error('PDF generation failed:', error);
+            console.error('Stack trace:', error.stack);
+            return c.json({ error: "Failed to generate PDF" }, 500);
+        }
 
         if(!pdfBuffer) {
             return c.json({ error: "Failed to generate PDF"}, 500);
