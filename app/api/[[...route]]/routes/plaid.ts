@@ -86,27 +86,39 @@ const app = new Hono()
   "/create-link-token",
   clerkConfig,
   async (c) => {
-    const auth = getAuth(c);
+    try {
+      const auth = getAuth(c);
 
-    if(!auth?.userId) {
-      return c.json({ error: "Unauthorized"}, 400);
-    };
+      if(!auth?.userId) {
+        return c.json({ error: "Unauthorized"}, 400);
+      };
 
-    const tokenResponse = await plaidClient.linkTokenCreate({
-      user: { client_user_id: auth.userId || '' },
-      client_name: "CoreLedger",
-      language: 'en',
-      products: [Products.Transactions],
-      country_codes: [CountryCode.Us],
-      redirect_uri: process.env.NODE_ENV === 'production' 
-      ? process.env.PLAID_REDIRECT_URI 
-      : process.env.PLAID_SANDBOX_REDIRECT_URI,
+      console.log('creating link token for user', auth.userId);
+    
+      const tokenResponse = await plaidClient.linkTokenCreate({
+        user: { client_user_id: auth.userId },
+        client_name: "CoreLedger",
+        language: 'en',
+        products: [Products.Transactions],
+        country_codes: [CountryCode.Us],
+        redirect_uri: process.env.NODE_ENV === 'production' 
+           ? process.env.PLAID_REDIRECT_URI 
+          : process.env.PLAID_SANDBOX_REDIRECT_URI,
       //TODO: enable_multi_item_link: true, NEED SESSION_FINISHED WEBHOOK
-    });
+      });
 
-    return c.json({ 
-      data: tokenResponse.data.link_token
-    }, 200);
+      console.log('link token created', tokenResponse.data.link_token);
+
+      return c.json({ 
+        data: tokenResponse.data.link_token
+      }, 200);
+    } catch (error) {
+      console.error('error creating link token', error);
+      return c.json({ 
+        error: "Internal Server Error",
+        details: error instanceof Error ? error.message : 'Unknown error'
+      }, 500);
+    }
   }
 )
 .post(
