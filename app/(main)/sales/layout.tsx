@@ -1,5 +1,7 @@
 'use client';
 
+import { motion } from "framer-motion";
+
 import { cn } from "@/lib/utils";
 import { AppFeatures } from "@/db/schema";
 import { useRouter, usePathname } from "next/navigation";
@@ -12,6 +14,7 @@ import { WelcomeMsg } from "@/components/layout/WelcomeMsg";
 import { usePaywall } from "@/features/subscriptions/hooks/use-paywall";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
+import InvoicesPageSkeleton from "@/app/(main)/sales/invoices/loading";
 
 const MOBILE_TABS = [
     { label: "Invoices", path: "/sales/invoices" },
@@ -25,12 +28,12 @@ type Props = {
 }
 
 const SalesLayout = ({children} : Props) => {
-    const { shouldBlockFeature, triggerPaywall } = usePaywall();
+    const { shouldBlockFeature, triggerPaywall, isLoading } = usePaywall();
     const isMobile = useMediaQuery('(max-width: 768px)');
     const router = useRouter();
     const pathname = usePathname();
 
-    if (shouldBlockFeature(AppFeatures.SALES)) {
+    if (shouldBlockFeature(AppFeatures.SALES) && !isLoading) {
         return (
             <div className="h-screen w-full flex flex-col items-center justify-center gap-y-4">
                 <h2 className="text-2xl font-semibold">
@@ -48,12 +51,33 @@ const SalesLayout = ({children} : Props) => {
         );
     }
 
+    if (isLoading) {
+        return (
+            <>
+                <Header>
+                    <h1 className="text-3xl font-semibold text-white">
+                        Sales
+                    </h1>
+                </Header>
+                <div>
+                    <InvoicesPageSkeleton />
+                </div>
+            </>
+        )
+    }
+
     return ( 
-        <>
-        <main className="w-full">
+
+            <motion.div
+                key={pathname}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="w-full"
+            >
             {isMobile && (
-                <div className="sticky top-0 z-50 bg-background border-b">
-                    <nav className="flex overflow-x-auto no-scrollbar">
+                    <div className="sticky top-0 z-50 bg-background border-b">
+                        <nav className="flex overflow-x-auto no-scrollbar">
                         {MOBILE_TABS.map((tab) => (
                                 <Button
                                     key={tab.path}
@@ -74,11 +98,12 @@ const SalesLayout = ({children} : Props) => {
                     </div>
                 )}
                 <Header>
-                    <WelcomeMsg />
+                    <h1 className="text-3xl font-semibold text-white">
+                        Sales
+                    </h1>
                 </Header>
             {children}
-        </main>
-        </>
+            </motion.div>
     )
 }
 

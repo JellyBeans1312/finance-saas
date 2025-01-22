@@ -151,19 +151,6 @@ export const columns: ColumnDef<Invoice>[] = [
         }
     },
     {
-        accessorKey: 'notes',
-        header: ({ column }) => {
-            return (
-                <Button 
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                >
-                    Notes 
-                </Button>
-            )
-        }
-    },
-    {
         accessorKey: 'status',
         header: ({ column }) => {
             return (
@@ -180,7 +167,7 @@ export const columns: ColumnDef<Invoice>[] = [
             const status = row.original.status;
             const formattedStatus = status.charAt(0).toUpperCase() + status.slice(1);
             
-            return <Badge variant={status}>{formattedStatus}</Badge>
+            return <Badge variant={status} className='px-3.5 py-2.5 text-xs'>{formattedStatus}</Badge>
         }
     },
     {

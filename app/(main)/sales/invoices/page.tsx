@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 
 import { columns } from './columns';
 import InvoicesPageSkeleton from './loading';
@@ -69,7 +68,6 @@ export default function InvoiceOverviewPage() {
 
 
     return (
-        <Suspense fallback={<InvoicesPageSkeleton />}>
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -126,6 +124,5 @@ export default function InvoiceOverviewPage() {
                     </CardContent>
                 </Card>
             </motion.div>
-        </Suspense>
     );
 };
