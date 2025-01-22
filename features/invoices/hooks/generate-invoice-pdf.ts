@@ -58,7 +58,7 @@ async function initBrowser(): Promise<CoreBrowser | PuppeteerBrowser> {
 
 async function getBrowser(): Promise<CoreBrowser | PuppeteerBrowser> {
     try {
-        if (!browserInstance || !browserInstance.connected) {
+        if (!browserInstance || !browserInstance.isConnected) {
             browserInstance = await initBrowser();
         }
         return browserInstance;
