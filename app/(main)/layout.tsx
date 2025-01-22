@@ -19,7 +19,7 @@ export default function MainLayout({
         <main className="flex-1 w-full h-full overflow-auto">
           <QueryProvider>
             <SheetProvider />
-            <Toaster />
+            <Toaster richColors position="bottom-center" />
             <div className="min-h-screen w-full pb-16 md:pb-0">
               {children}
             </div>
