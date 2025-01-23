@@ -1,11 +1,11 @@
 "use client";
 
-import { useGetSummary } from "@/features/summary/api/use-get-summary";
+import { useGetBankingSummary } from "@/features/summary/api/use-get-summary";
 import { Chart, ChartLoading } from '@/components/summary-charts/Chart';
 import { SpendingPie, SpendingPieLoading } from "@/components/summary-charts/SpendingPie";
 
 export const DataCharts = () => {
-    const { data, isLoading } = useGetSummary();
+    const { data, isLoading } = useGetBankingSummary();
     
     if(isLoading) {
         return (
