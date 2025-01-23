@@ -5,7 +5,86 @@ import { useSearchParams } from 'next/navigation';
 import { client } from '@/lib/hono';
 import { convertAmountFromMiliunits } from '@/lib/utils';
 
-export const useGetSummary = () => {
+export const useGetDashboardBanking = () => {
+    const params = useSearchParams();
+    const from = params.get("from") || "";
+    const to = params.get("to") || "";
+
+    return useQuery({
+        queryKey: ['summary', { from, to }],
+        queryFn: async () => {
+            const response = await client.api.summary['dashboard-banking'].$get({
+                query: { from, to }
+            });
+
+            if(!response.ok) {
+                throw new Error("Failed to fetch summary")
+            }
+
+            const { data } = await response.json();
+            return {
+                banking: {
+                    totalIncome: convertAmountFromMiliunits(data.totalIncome),
+                    totalExpenses: convertAmountFromMiliunits(data.totalExpenses),
+                }
+            };
+        },
+        staleTime: 1000 * 60 * 5,
+    });
+};
+
+export const useGetDashboardSales = () => {
+    const params = useSearchParams();
+    const from = params.get("from") || "";
+    const to = params.get("to") || "";
+
+    return useQuery({
+        queryKey: ['dashboard-sales', { from, to }],
+        queryFn: async () => {
+            const response = await client.api.summary['dashboard-sales'].$get({
+                query: { from, to }
+            });
+
+            if(!response.ok) {
+                throw new Error("Failed to fetch summary")
+            }
+
+            const { data } = await response.json();
+            return data;
+        },
+        staleTime: 1000 * 60 * 5,
+    });
+}
+
+export const useGetDashboardAccounts = () => {
+    return useQuery({
+        queryKey: ['dashboard-accounts'],
+        queryFn: async () => {
+            const response = await client.api.summary['dashboard-accounts'].$get();
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch accounts overview");
+            }
+
+            const { data } = await response.json();
+            
+            return {
+                accounts: data.accounts.map((account) => ({
+                    ...account,
+                    balance: convertAmountFromMiliunits(account.balance),
+                })),
+                recentTransactions: data.recentTransactions.map((transaction) => ({
+                    ...transaction,
+                    amount: convertAmountFromMiliunits(transaction.amount),
+                })),
+            };
+        },
+        staleTime: 1000 * 30,
+        refetchInterval: 1000 * 60
+    });
+};
+
+export const useGetBankingSummary = () => {
     const params = useSearchParams();
     const from = params.get("from") || "" ;
     const to = params.get("to") || "" ;
@@ -13,9 +92,9 @@ export const useGetSummary = () => {
 
 
     const query = useQuery({
-        queryKey: ['summary', { from, to, accountId }],
+        queryKey: ['banking-summary', { from, to, accountId }],
         queryFn: async () => {
-            const response = await client.api.summary.$get({
+            const response = await client.api.summary['banking-summary'].$get({
                 query: {
                     from,
                     to,
@@ -44,6 +123,35 @@ export const useGetSummary = () => {
                 })),
             }
         }
+    })
+    return query;
+}
+
+export const useGetSalesSummary = () => {
+    const params = useSearchParams();
+    const from = params.get("from") || "" ;
+    const to = params.get("to") || "" ;
+    const accountId = params.get("accountId") || "" ;
+
+
+    const query = useQuery({
+        queryKey: ['sales-summary', { from, to, accountId }],
+        queryFn: async () => {
+            const response = await client.api.summary['sales-summary'].$get({
+                query: {
+                    from,
+                    to,
+                }
+            });
+
+            if(!response.ok) {
+                throw new Error("Failed to fetch summary")
+            }
+
+            // const { data } = await response.json();
+            // return data;
+        },
+        staleTime: 1000 * 60 * 5,
     })
     return query;
 }
