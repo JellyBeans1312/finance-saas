@@ -8,11 +8,6 @@ import { InvoiceEmail } from "@/components/sales/invoice-email";
 const isProd = process.env.NODE_ENV === 'production';
 let browserInstance: CoreBrowser | PuppeteerBrowser | null = null;
 
-const LAMBDA_TASK_ROOT = process.env.LAMBDA_TASK_ROOT;
-const CHROME_PATH = isProd 
-    ? `${LAMBDA_TASK_ROOT}/node_modules/@sparticuz/chromium/bin` 
-    : undefined;
-
 const VIEWPORT = {
     width: 1200,
     height: 1553,
