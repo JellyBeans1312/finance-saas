@@ -73,10 +73,12 @@ const OverviewStatsWrapper = () => {
 
 const AccountBalancesWrapper = () => {
     const { data: accountsOverview } = useGetDashboardAccounts();
+    if(!accountsOverview) return <AccountBalances.Skeleton />
     return <AccountBalances accounts={accountsOverview?.accounts} />;
 };
 
 const RecentTransactionsWrapper = () => {
     const { data: accountsOverview } = useGetDashboardAccounts();
+    if(!accountsOverview) return <RecentTransactions.Skeleton />
     return <RecentTransactions recentTransactions={accountsOverview?.recentTransactions} />;
 };

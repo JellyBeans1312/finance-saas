@@ -22,7 +22,7 @@ type RecentTransactionsProps = {
 
 export const RecentTransactions = ({ recentTransactions }: RecentTransactionsProps) => {
 
-  if(!recentTransactions || recentTransactions.length === 0) return (
+  if(recentTransactions && recentTransactions.length === 0) return (
     <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg p-8">
       <div className="text-center space-y-4">
         <h2 className="text-2xl font-bold text-gray-800">No transactions found</h2>
@@ -91,15 +91,29 @@ const shimmer =
  
 RecentTransactions.Skeleton = () => {
   return (
-    <div className={`${shimmer} relative w-full overflow-hidden md:col-span-4`}>
-      <div className="mb-4 h-8 w-36 rounded-md bg-gray-100" />
-      <div className="rounded-xl bg-gray-100 p-4">
-        <div className="mt-0 grid h-[410px] grid-cols-12 items-end gap-2 rounded-md bg-white p-4 sm:grid-cols-13 md:gap-4" />
-        <div className="flex items-center pb-2 pt-6">
-          <div className="h-5 w-5 rounded-full bg-gray-200" />
-          <div className="ml-2 h-4 w-20 rounded-md bg-gray-200" />
+    <Card className="w-full">
+    <CardHeader>
+      <CardTitle className="text-base font-normal">Recent Transactions</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-4">
+        {[...Array(5)].map((_, index) => (
+          <div key={index} className={`animate-pulse flex items-center justify-between ${shimmer}`}>
+            <div className="flex items-center space-x-4"></div>
+              <div className="rounded-full p-2 bg-gray-400"></div>
+              <div className="flex-1 space-y-6 py-1">
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="h-2 bg-gray-400 rounded col-span-2"></div>
+                    <div className="h-2 bg-gray-400 rounded col-span-1"></div>
+                  </div>
+                  <div className="h-2 bg-gray-400 rounded"></div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
