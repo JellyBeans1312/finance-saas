@@ -8,7 +8,7 @@ import {
 } from 'next/navigation'
 
 import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
-import { useGetSummary } from '@/features/summary/api/use-get-summary';
+import { useGetBankingSummary } from '@/features/summary/api/use-get-summary';
 
 import { 
     Select,
@@ -32,7 +32,7 @@ export const AccountFilter = () => {
     } = useGetAccounts();
     const { 
         isLoading: isLoadingSummary
-    } = useGetSummary();
+    } = useGetBankingSummary();
 
     const onChange = (newValue: string) => {
         const query = {

@@ -1,5 +1,5 @@
 "use client";
-import { useGetSummary } from "@/features/summary/api/use-get-summary";
+import { useGetBankingSummary } from "@/features/summary/api/use-get-summary";
 
 import { formatDateRange } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
@@ -9,7 +9,7 @@ import { FaArrowTrendUp, FaArrowTrendDown } from 'react-icons/fa6'
 import { DataCard, DataCardLoading } from "@/components/summary-charts/DataCard";
 
 export  const DataGrid = () => {
-    const { data, isLoading } = useGetSummary();
+    const { data, isLoading } = useGetBankingSummary();
     const params = useSearchParams();
     const to = params.get("to") || undefined;
     const from = params.get("from") || undefined;
