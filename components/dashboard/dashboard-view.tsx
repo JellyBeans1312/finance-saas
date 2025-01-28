@@ -3,9 +3,9 @@
 import { Suspense } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { OverviewStats } from '@/components/overview-stats'
-import { AccountBalances } from '@/components/account-balances'
-import { RecentTransactions } from '@/components/recent-transactions'
+import { OverviewStats, OverviewStatsSkeleton } from '@/components/overview-stats'
+import { AccountBalances, AccountBalancesSkeleton } from '@/components/account-balances'
+import { RecentTransactions, RecentTransactionsSkeleton } from '@/components/recent-transactions'
 import { SalesOverview } from '@/components/sales-overview'
 import { ExpensesOverview } from '@/components/expenses-overview'
 import { QuickActions } from '@/components/quick-actions'
@@ -34,16 +34,16 @@ export const DashboardView = () => {
                 >
                     {/* <QuickActions /> */}
                     <div className="space-y-6">
-                        <Suspense fallback={<OverviewStats.Skeleton />}>
+                        <Suspense fallback={<OverviewStatsSkeleton />}>
                             <OverviewStatsWrapper />
                         </Suspense>
                         
                         <div className={`grid gap-6 ${isMobile ? '' : 'md:grid-cols-2'} w-full`}>
-                            <Suspense fallback={<AccountBalances.Skeleton />}>
+                            <Suspense fallback={<AccountBalancesSkeleton />}>
                                 <AccountBalancesWrapper />
                             </Suspense>
                             
-                            <Suspense fallback={<RecentTransactions.Skeleton />}>
+                            <Suspense fallback={<RecentTransactionsSkeleton />}>
                                 <RecentTransactionsWrapper />
                             </Suspense>
                         </div>
@@ -62,7 +62,7 @@ const OverviewStatsWrapper = () => {
     const { data: salesOverview } = useGetDashboardSales();
     const { data: bankingOverview } = useGetDashboardBanking();
     
-    if(!salesOverview || !bankingOverview) return <OverviewStats.Skeleton />
+    if(!salesOverview || !bankingOverview) return <OverviewStatsSkeleton />
     return (
         <OverviewStats 
             bankingOverview={bankingOverview?.banking} 
@@ -73,12 +73,12 @@ const OverviewStatsWrapper = () => {
 
 const AccountBalancesWrapper = () => {
     const { data: accountsOverview } = useGetDashboardAccounts();
-    if(!accountsOverview) return <AccountBalances.Skeleton />
+    if(!accountsOverview) return <AccountBalancesSkeleton />
     return <AccountBalances accounts={accountsOverview?.accounts} />;
 };
 
 const RecentTransactionsWrapper = () => {
     const { data: accountsOverview } = useGetDashboardAccounts();
-    if(!accountsOverview) return <RecentTransactions.Skeleton />
+    if(!accountsOverview) return <RecentTransactionsSkeleton />
     return <RecentTransactions recentTransactions={accountsOverview?.recentTransactions} />;
 };

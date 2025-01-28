@@ -26,7 +26,7 @@ export const RecentTransactions = ({ recentTransactions }: RecentTransactionsPro
     <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg p-8">
       <div className="text-center space-y-4">
         <h2 className="text-2xl font-bold text-gray-800">No transactions found</h2>
-        <p className="text-sm text-gray-600">It seems you don't have any transactions. Let's create one!</p>
+        <p className="text-sm text-gray-600">It seems you don&apos;t have any transactions. Let&apos;s create one!</p>
         <div className="flex flex-col items-center space-y-4">
           <Button variant="outline" size="sm" className="w-full">
             <Link href="/banking/transactions">
@@ -88,8 +88,7 @@ const shimmer =
   'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
 
 
- 
-RecentTransactions.Skeleton = () => {
+export const RecentTransactionsSkeleton = () => {
   return (
     <Card className="w-full">
     <CardHeader>

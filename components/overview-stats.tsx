@@ -96,7 +96,7 @@ const CardSkeleton = () => {
     </div>
   )
 }
-OverviewStats.Skeleton = () => {
+export const OverviewStatsSkeleton = () => {
   return (
    <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4 w-full'>
       <CardSkeleton />

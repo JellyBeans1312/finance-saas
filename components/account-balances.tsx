@@ -21,7 +21,7 @@ type AccountBalancesProps = {
 export const AccountBalances = ({ accounts }: AccountBalancesProps) => {
   const accountItems = accounts?.map((account) => {
     return (
-      <div>
+      <div key={account.accountId}>
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium">{account.accountName}</h3>
           <Button 
@@ -46,7 +46,7 @@ export const AccountBalances = ({ accounts }: AccountBalancesProps) => {
     <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg p-8">
       <div className="text-center space-y-4">
         <h2 className="text-2xl font-bold text-gray-800">No accounts found</h2>
-        <p className="text-sm text-gray-600">It seems you don't have any accounts yet. Let's get started!</p>
+        <p className="text-sm text-gray-600">It seems you don&apos;t have any accounts yet. Let&apos;s get started!</p>
         <div className="flex flex-col items-center space-y-4">
           <Button variant="outline" size="sm" className="w-full">
             <Link href="/banking/accounts">
@@ -83,7 +83,7 @@ export const AccountBalances = ({ accounts }: AccountBalancesProps) => {
 const shimmer =
   'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
 
-AccountBalances.Skeleton = () => {
+export const AccountBalancesSkeleton = () => {
   return (
     <Card className="w-full">
       <CardHeader>
