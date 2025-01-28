@@ -127,99 +127,148 @@ const app = new Hono()
   zValidator(
     "json",
     z.object({
-      publicToken: z.string()
+      publicToken: z.string(),
+      institutionId: z.string(),
+      linkSessionId: z.string()
     })
   ),
   async (c) => {
-    const auth = getAuth(c);
-
-    const { publicToken } = c.req.valid('json');
-
-    if(!auth?.userId) {
-      return c.json({ error: "Unauthorized"}, 400);
-    };
-
-    const accessToken = await plaidClient.itemPublicTokenExchange({
-      public_token: publicToken,
-    });
-
-    const [ connectedBank ] = await db
-    .insert(connectedBanks)
-    .values({
-      userId: auth.userId,
-      accessToken: accessToken.data.access_token,
-      id: createId(),
-      consentGivenAt: new Date(),
-    })
-    .returning();
-
-    // TODO: insitutions.get
-
-    const plaidTransactions = await plaidClient.transactionsSync({
-      access_token: connectedBank.accessToken,
-    });
-    console.log(plaidTransactions.data);
-    const plaidAccounts = await plaidClient.accountsGet({
-      access_token: connectedBank.accessToken
-    });
-
-    const plaidCategories = await plaidClient.categoriesGet({});
-
-    const newAccounts = await db
-    .insert(accounts)
-    .values(
-      plaidAccounts.data.accounts.map((account) => ({
-        id: createId(),
-        name: account.name,
-        plaidId: account.account_id,
-        userId: auth.userId
-        })
-      )
-    )
-    .returning();
-
-    const newCategories = await db
-    .insert(categories)
-    .values(
-      plaidCategories.data.categories.map((category) => ({
-        id: createId(),
-        name: category.hierarchy.join(', '),
-        plaidId: category.category_id,
-        userId: auth.userId
-        })
-      )
-    )
-    .returning();
-
-    const newTransactionValues = plaidTransactions.data.added
-      .reduce((acc, transaction) => {
-        const account = newAccounts.find((account) => account.plaidId === transaction.account_id)
-        const category = newCategories.find((category) => category.plaidId === transaction.category_id)
-        const amountInMiliunits = convertAmountToMiliunits(transaction.amount);
-
-        if(account) {
-          acc.push({
-            id: createId(),
-            amount: amountInMiliunits,
-            payee: transaction.merchant_name || transaction.name,
-            notes: transaction.name,
-            date: new Date(transaction.date),
-            accountId: account.id,
-            categoryId: category?.id,
-          })
-        };
-
-        return acc;
-      }, [] as typeof transactions.$inferInsert[]);
-
-      if(newTransactionValues.length > 0 ) {
-        await db
-        .insert(transactions)
-        .values(newTransactionValues)
+    try {
+      const auth = getAuth(c);
+      const { publicToken, institutionId, linkSessionId } = c.req.valid('json');
+  
+      if(!auth?.userId) {
+        return c.json({ error: "Unauthorized"}, 400);
       };
+  
+      console.log('Starting token exchange:', {
+        user_id: auth.userId,
+        institution_id: institutionId,
+        link_session_id: linkSessionId,
+      });    
+  
+      const existingBank = await db
+        .select()
+        .from(connectedBanks)
+        .where(
+          and(
+            eq(connectedBanks.userId, auth.userId),
+            eq(connectedBanks.institutionId, institutionId)
+          )
+        );
+  
+      if(existingBank.length > 0) {
+        return c.json({
+          error: "Bank already connected",
+          code: 'DUPLICATE_INSTITUTION'
+          }, 400);
+      }
+  
+      const accessToken = await plaidClient.itemPublicTokenExchange({
+        public_token: publicToken,
+      });
+  
+      console.log('Token exchange successful:', {
+        user_id: auth.userId,
+        institution_id: institutionId,
+        item_id: accessToken.data.item_id,
+        request_id: accessToken.data.request_id,
+        link_session_id: linkSessionId,
+      });
+  
+  
+      const [ connectedBank ] = await db
+      .insert(connectedBanks)
+      .values({
+        userId: auth.userId,
+        accessToken: accessToken.data.access_token,
+        institutionId,
+        itemId: accessToken.data.item_id,
+        id: createId(),
+        consentGivenAt: new Date(),
+      })
+      .returning();
+  
+      const plaidTransactions = await plaidClient.transactionsSync({
+        access_token: connectedBank.accessToken,
+      });
+      console.log('Transactions sync completed:', {
+        item_id: accessToken.data.item_id,
+        request_id: plaidTransactions.data.request_id,
+        new_transactions: plaidTransactions.data.added.length,
+      });
+  
+      const plaidAccounts = await plaidClient.accountsGet({
+        access_token: connectedBank.accessToken
+      });
+  
+      const plaidCategories = await plaidClient.categoriesGet({});
+  
+      const newAccounts = await db
+      .insert(accounts)
+      .values(
+        plaidAccounts.data.accounts.map((account) => ({
+          id: createId(),
+          name: account.name,
+          plaidId: account.account_id,
+          userId: auth.userId
+          })
+        )
+      )
+      .returning();
+  
+      const newCategories = await db
+      .insert(categories)
+      .values(
+        plaidCategories.data.categories.map((category) => ({
+          id: createId(),
+          name: category.hierarchy.join(', '),
+          plaidId: category.category_id,
+          userId: auth.userId
+          })
+        )
+      )
+      .returning();
+  
+      const newTransactionValues = plaidTransactions.data.added
+        .reduce((acc, transaction) => {
+          const account = newAccounts.find((account) => account.plaidId === transaction.account_id)
+          const category = newCategories.find((category) => category.plaidId === transaction.category_id)
+          const amountInMiliunits = convertAmountToMiliunits(transaction.amount);
+  
+          if(account) {
+            acc.push({
+              id: createId(),
+              amount: amountInMiliunits,
+              payee: transaction.merchant_name || transaction.name,
+              notes: transaction.name,
+              date: new Date(transaction.date),
+              accountId: account.id,
+              categoryId: category?.id,
+            })
+          };
+  
+          return acc;
+        }, [] as typeof transactions.$inferInsert[]);
+  
+        if(newTransactionValues.length > 0 ) {
+          await db
+          .insert(transactions)
+          .values(newTransactionValues)
+        };
+  
+      return c.json({ ok: true }, 200);
+    } catch(error) {
+      console.error('Error in exchange-public-token:', {
+        error_message: error instanceof Error ? error.message : 'Unknown error',
+        error_stack: error instanceof Error ? error.stack : undefined,
+        institution_id: c.req.valid('json').institutionId,
+        link_session_id: c.req.valid('json').linkSessionId,
+      });
 
-    return c.json({ ok: true }, 200);
-  }
+      throw error;
+      }
+    }
 )
 // Update Link Token
 .post(
