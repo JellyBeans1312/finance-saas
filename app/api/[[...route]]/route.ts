@@ -24,9 +24,7 @@ app.use('*', async (c, next) => {
       method: c.req.method,
     });
     await next();
-  });
-
-app.use('/api/*',
+  }, 
   cors({
     origin: [
         process.env.NEXT_PUBLIC_APP_URL!,
