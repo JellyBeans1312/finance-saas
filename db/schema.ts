@@ -79,6 +79,10 @@ export const insertTransactionSchema = createInsertSchema(transactions, {
 
 export const connectedBanks = pgTable('connected_banks', {
     id: text("id").primaryKey(),
+    institutionId: text("institution_id"),
+    lastSuccessfulUpdate: timestamp("last_successful_update"),
+    lastFailedUpdate: timestamp("last_failed_update"),
+    errorCode: text("error_code"),
     userId: text("user_id").notNull(),
     accessToken: text("access_token").notNull(),
     itemId: text("item_id"),
